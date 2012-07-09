@@ -34,6 +34,29 @@ parser.Render(word, [
 ], document.ActiveWindow.Selection)
 ```
 
+## Supported tags and extentions
+
+HtmlToWord currently supports the following HTML tags:
+ * p
+ * b / strong
+ * br
+ * div
+ * em / i
+ * u
+ * ul
+ * ol
+ * li
+ * table
+ * tbody
+ * tr
+ * td
+ * img
+ * a
+ * h1/2/3/4
+
+### Extending
+Extending HtmlToWord is pretty easy. Each tag is a class that inherits from BaseElement. It has two methods that are called: *StartRender* and *EndRender*. Take a look in elements/headings.py and elements/text.py for some simple examples.
+
 
 
 ## Rationale
