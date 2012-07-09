@@ -2,6 +2,8 @@ import HtmlToWord
 from HtmlToWord.elements import *
 import win32com.client
 import os
+if not os.path.exists("saved_documents"):
+    os.mkdir("saved_documents")
 
 word = win32com.client.gencache.EnsureDispatch("Word.Application")
 word.Visible = True

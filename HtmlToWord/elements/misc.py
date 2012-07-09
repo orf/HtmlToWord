@@ -22,7 +22,7 @@ class Image(ChildlessElement):
             style = self.selection.Range.Style
             self.selection.Range.Style = self.GetDocument().Styles("caption")
             self.selection.TypeText(caption)
-            self.selection.Style = style
+            #self.selection.Style = style
 
 class HyperLink(BaseElement):
     def StartRender(self):

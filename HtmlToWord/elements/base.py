@@ -5,11 +5,11 @@ from collections import defaultdict
 class BaseElement(object):
     AllowedChildren = []
     IsIgnored = False
-    def __init__(self, children=None):
+    def __init__(self, children=None, attributes=None):
         self.children = children or []
         self.selection = None
         self.parent = None
-        self.attrs = {}
+        self.attrs = attributes or {}
 
     @contextlib.contextmanager
     def With(self, item):
