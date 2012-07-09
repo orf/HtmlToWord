@@ -8,5 +8,8 @@ setup(
     license='',
     author='Tom',
     author_email='tom@tomforb.es',
-    description='Render HTML to a specific portion of a word document'
+    description='Render HTML to a specific portion of a word document',
+    install_requires=["BeautifulSoup>=3.2.1",
+              "pywin32>=217"],
+    include_package_data=True
 )
