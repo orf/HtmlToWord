@@ -51,7 +51,6 @@ class Parser(object):
 
         if isinstance(html, basestring):
             html = BeautifulSoup.BeautifulSoup(html,convertEntities="html")
-
         return [self._Parse(None,child) for child in html.childGenerator()]
 
     def _Parse(self, parent, element):
