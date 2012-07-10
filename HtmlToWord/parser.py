@@ -2,7 +2,7 @@ from elements import *
 import BeautifulSoup
 import warnings
 
-BeautifulSoup.name2codepoint["nbsp"] = ord(" ")
+#BeautifulSoup.name2codepoint["nbsp"] = ord(" ")
 
 ElementMappings = {
     "p":Paragraph,
@@ -52,13 +52,13 @@ class Parser(object):
         """
 
         if isinstance(html, basestring):
-            html = BeautifulSoup.BeautifulSoup(html,convertEntities="html")
+            html = BeautifulSoup.BeautifulSoup(html,convertEntities="xhtml")
 
         return [self._Parse(None,child) for child in html.childGenerator()]
 
     def _Parse(self, parent, element):
         if isinstance(element, BeautifulSoup.NavigableString):
-            return Text(str(element))
+            return Text(element)
 
         try:
             ElementInstance = self.ElementMappings[element.name]()
