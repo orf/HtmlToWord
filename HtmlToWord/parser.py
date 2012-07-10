@@ -34,8 +34,10 @@ ElementMappings = {
 }
 
 class Parser(object):
-    def __init__(self, ElementMap=None):
+    def __init__(self, ElementMap=None, ReplaceNewlines=True,Word=None):
         self.ElementMappings = ElementMap or ElementMappings
+        self.ReplaceNewlines=ReplaceNewlines
+        self.Word = Word
 
     def AddElement(self, element, tags):
         for tag in tags:
@@ -50,7 +52,8 @@ class Parser(object):
         """
         I take HTML or a BeautifulSoup instance and return a list of parsed elements for use with Render.
         """
-
+        if self.ReplaceNewlines:
+            html = html.replace("\n","")
         if isinstance(html, basestring):
             html = BeautifulSoup.BeautifulSoup(html,convertEntities="xhtml")
 
