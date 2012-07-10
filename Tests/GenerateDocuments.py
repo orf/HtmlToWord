@@ -1,7 +1,8 @@
 import HtmlToWord
-from HtmlToWord.elements import *
 import win32com.client
 import os
+import sys
+
 if not os.path.exists("saved_documents"):
     os.mkdir("saved_documents")
 
@@ -9,7 +10,12 @@ word = win32com.client.gencache.EnsureDispatch("Word.Application")
 word.Visible = True
 parser = HtmlToWord.Parser()
 
-for file_name in (path for path in os.listdir("html") if path.endswith(".html")):
+try:
+    paths = (sys.argv[1],)
+except IndexError:
+    paths = (path for path in os.listdir("html") if path.endswith(".html"))
+
+for file_name in paths:
     document = word.Documents.Add()
 
     with open(os.path.join("html",file_name),"r") as fd:

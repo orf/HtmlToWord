@@ -11,5 +11,9 @@ setup(
     description='Render HTML to a specific portion of a word document',
     install_requires=["BeautifulSoup>=3.2.1",
               "pywin32>=217"],
-    include_package_data=True
+    include_package_data=True,
+    long_description="""\
+Render HTML to a word document using win32com.
+Check out the github repo for more information and code samples.
+"""
 )

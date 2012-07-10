@@ -7,6 +7,8 @@ class Break(ChildlessElement):
 class Div(BaseElement):
     pass
 
+class Span(IgnoredElement):
+    pass
 
 class Image(ChildlessElement):
     def StartRender(self):

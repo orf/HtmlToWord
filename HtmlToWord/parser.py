@@ -12,6 +12,7 @@ ElementMappings = {
     "em":Italic,
     "i":Italic,
     "u":UnderLine,
+    "span":Span,
 
     "ul":UnorderedList,
     "ol":OrderedList,
@@ -65,7 +66,7 @@ class Parser(object):
 
         for child in element:
             tchild = self._Parse(ElementInstance, child)
-            if ElementInstance.IsChildAllowed(tchild):
+            if ElementInstance.IsChildAllowed(tchild) and not tchild is ElementInstance:
                 ElementInstance.Add(tchild)
 
         return ElementInstance
@@ -81,4 +82,5 @@ class Parser(object):
 
     def ParseAndRender(self, html, Word, selection):
         elements = self.Parse(html)
+        print elements
         self.Render(Word, elements, selection)
