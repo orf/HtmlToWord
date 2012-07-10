@@ -82,5 +82,4 @@ class Parser(object):
 
     def ParseAndRender(self, html, Word, selection):
         elements = self.Parse(html)
-        print elements
         self.Render(Word, elements, selection)
