@@ -38,6 +38,8 @@ class Text(BaseElement):
         return self.Text
 
     def StartRender(self):
+        if self.GetText() == "\n":
+            return
         self.selection.TypeText(self.GetText())
 
     def __repr__(self):

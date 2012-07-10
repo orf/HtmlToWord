@@ -72,5 +72,9 @@ class ListElement(BaseElement):
         # A bit of a hack but whatever. If the last child is a OrderedList or UnorderedList
         # then we have a nested sub-list. Don't start a new paragraph because the List will
         # do this for us.
-        if not self.GetChildren()[-1].GetName() in ("OrderedList","UnorderedList"):
+        last_child = ""
+        if len(self.GetChildren()):
+            last_child = self.GetChildren()[-1].GetName()
+
+        if not last_child in ("OrderedList","UnorderedList"):
             self.selection.TypeParagraph()
