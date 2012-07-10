@@ -1,5 +1,6 @@
 from elements import *
 import BeautifulSoup
+import warnings
 
 BeautifulSoup.name2codepoint["nbsp"] = ord(" ")
 
@@ -58,7 +59,13 @@ class Parser(object):
     def _Parse(self, parent, element):
         if isinstance(element, BeautifulSoup.NavigableString):
             return Text(str(element))
-        ElementInstance = self.ElementMappings[element.name]()
+
+        try:
+            ElementInstance = self.ElementMappings[element.name]()
+        except KeyError:
+            warnings.warn("Element %s is not known!"%element.name)
+            ElementInstance = IgnoredElement()
+
         ElementInstance.SetAttrs(dict(element.attrs))
 
         if ElementInstance.IsIgnored:
