@@ -2,6 +2,14 @@ from HtmlToWord.elements.base import *
 from win32com.client import constants
 
 class Break(ChildlessElement):
+    """
+    I'm a really annoying element who gets in the way of things. I sometimes have an effect and I sometimes don't.
+    If I'm in a Paragraph I cause the paragraph to change its style
+    If I'm in a ListElement I mess things up so I am excluded from the party :(
+
+    I still have a few bugs to do with me being nested in tags and then those tags being in paragraphs and lists,
+    but screw it.
+    """
     def EndRender(self):
         self.selection.TypeParagraph()
 
