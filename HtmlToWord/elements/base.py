@@ -4,6 +4,7 @@ from collections import defaultdict
 
 class BaseElement(object):
     AllowedChildren = []
+    IgnoredChildren = []
     IsIgnored = False
     def __init__(self, children=None, attributes=None):
         self.children = children or []
@@ -16,13 +17,19 @@ class BaseElement(object):
         yield item
 
     def IsChildAllowed(self, child):
-        if not self.AllowedChildren:
-            return True
+        assert not (self.AllowedChildren and self.IgnoredChildren), "Only AllowedChildren OR IgnoredChildren allowed"
 
-        if child.GetName() in self.AllowedChildren:
-            return True
+        if not self.AllowedChildren and not self.IgnoredChildren: return True
 
-        return False
+        if self.IgnoredChildren:
+            if child.GetName() in self.IgnoredChildren:
+                return False
+            return True # Child is not ignored
+        else:
+            if child.GetName() in self.AllowedChildren:
+                return True
+            return False # Child is not allowed :(
+
 
     def SetAttrs(self, attrs):
         self.attrs = defaultdict(lambda: None, attrs)

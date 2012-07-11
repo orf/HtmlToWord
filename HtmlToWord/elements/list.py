@@ -68,6 +68,7 @@ class UnorderedList(List):
         return constants.wdBulletGallery
 
 class ListElement(BaseElement):
+    IgnoredChildren = ["Break"]
     def EndRender(self):
         # A bit of a hack but whatever. If the last child is a OrderedList or UnorderedList
         # then we have a nested sub-list. Don't start a new paragraph because the List will
