@@ -1,4 +1,5 @@
 from HtmlToWord.elements.base import *
+from HtmlToWord.elements.misc import Break
 from win32com.client import constants
 
 class Bold(BaseElement):
@@ -46,5 +47,12 @@ class Text(BaseElement):
         return "<Text: %s>"%repr(self.Text)
 
 class Paragraph(BaseElement):
+    def StartRender(self):
+        if self.HasChild("Break"):
+            self.PreviousStyle = self.selection.Style
+            self.selection.Style = self.GetDocument().Styles("No Spacing")
+
     def EndRender(self):
+        if self.HasChild("Break"):
+            self.selection.Style = self.PreviousStyle
         self.selection.TypeParagraph()

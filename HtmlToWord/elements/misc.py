@@ -2,7 +2,8 @@ from HtmlToWord.elements.base import *
 from win32com.client import constants
 
 class Break(ChildlessElement):
-    pass
+    def EndRender(self):
+        self.selection.TypeParagraph()
 
 class Div(BaseElement):
     pass

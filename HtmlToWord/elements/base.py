@@ -43,6 +43,14 @@ class BaseElement(object):
     def Add(self, child):
         self.children.append(child)
 
+    def HasChild(self, child):
+        if not isinstance(child, basestring):
+            child = child.GetName()
+
+        for c in self.GetChildren():
+            if child == c.GetName():
+                return True
+
     def IsText(self):
         return False
 
