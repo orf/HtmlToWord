@@ -1,0 +1,19 @@
+<p>Some Text</p>
+
+<p>
+
+<pre>// This is code bro<br>
+var pwd = "bxjzjbphpfhshzhh";<br>
+var cipher = ['k', 's', 'z', 'h', 'x', 'b', 'p', 'j', 'v', 'c', 'g', 'f', 'q', 'n', 't', 'm'];<br>
+var result="";<br>
+for(var i=0;i&lt;pwd.length;i+=2)<br>
+{<br>
+<span style="white-space: pre-wrap; "></span>var ind1 = cipher.indexOf(pwd.substring(<wbr>i,i+1));<br>
+<span style="white-space: pre-wrap; "></span>var ind2 = cipher.indexOf(pwd.substring(<wbr>i+1,i+2));<br>
+<span style="white-space: pre-wrap; "></span>result += String.fromCharCode((ind1*16)+<wbr>ind2);<br>
+}<br>
+result = decodeURIComponent(result);<br>
+document.write(result);</pre>
+</p>
+
+<p>This is not code</p>

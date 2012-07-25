@@ -32,8 +32,11 @@ ElementMappings = {
     "h3":Heading3,
     "h4":Heading4,
 
-    "blockquote":IgnoredElement,
     "html":HTML,
+    "pre":Pre,
+
+    "blockquote":IgnoredElement,
+    "wbr":IgnoredElement
 }
 
 class Parser(object):

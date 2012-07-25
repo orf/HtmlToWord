@@ -56,3 +56,16 @@ class Paragraph(BaseElement):
         if self.HasChild("Break"):
             self.selection.Style = self.PreviousStyle
         self.selection.TypeParagraph()
+
+class Pre(BaseElement):
+    def StartRender(self):
+        self.PreviousStyle = self.selection.Style
+        self.PreviousFont  = self.selection.Font.Name
+
+        self.selection.Style = self.GetDocument().Styles("No Spacing")
+        self.selection.Font.Name = "Courier New"
+
+    def EndRender(self):
+        self.selection.TypeParagraph()
+        self.selection.Style = self.PreviousStyle
+        self.selection.Font.Name = self.PreviousFont
