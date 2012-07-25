@@ -76,7 +76,7 @@ class Parser(object):
 
         if ElementInstance.IsIgnored:
             if parent is None:
-                ElementInstance = self.ElementMappings["html"]
+                ElementInstance = self.ElementMappings["html"]()
             else:
                 ElementInstance = parent
 
