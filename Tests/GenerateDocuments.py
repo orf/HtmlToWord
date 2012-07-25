@@ -24,9 +24,9 @@ for file_name in paths:
             line = line.replace("\n","")
             line = line.rstrip().lstrip()
             Html+=line
-
+    print parser.Parse(Html)
     parser.ParseAndRender(Html, word, document.ActiveWindow.Selection)
     path = os.path.abspath(os.path.join("saved_documents",file_name+".docx"))
     print path
     document.SaveAs(path)
-    document.Close()
+    #document.Close()

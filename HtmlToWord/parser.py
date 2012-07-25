@@ -31,6 +31,9 @@ ElementMappings = {
     "h2":Heading2,
     "h3":Heading3,
     "h4":Heading4,
+
+    "blockquote":IgnoredElement,
+    "html":HTML,
 }
 
 class Parser(object):
@@ -72,7 +75,10 @@ class Parser(object):
         ElementInstance.SetAttrs(dict(element.attrs))
 
         if ElementInstance.IsIgnored:
-            ElementInstance = parent
+            if parent is None:
+                ElementInstance = self.ElementMappings["html"]
+            else:
+                ElementInstance = parent
 
         for child in element:
             tchild = self._Parse(ElementInstance, child)

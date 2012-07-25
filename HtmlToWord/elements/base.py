@@ -105,3 +105,6 @@ class IgnoredElement(BaseElement):
 class ChildlessElement(BaseElement):
     def IsChildAllowed(self, child):
         return False
+
+class HTML(BaseElement):
+    pass
