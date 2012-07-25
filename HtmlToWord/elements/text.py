@@ -66,6 +66,7 @@ class Pre(BaseElement):
         self.selection.Font.Name = "Courier New"
 
     def EndRender(self):
+        self.selection.ParagraphFormat.LineSpacingRule = constants.wdLineSpace1pt5
         self.selection.TypeParagraph()
         self.selection.Style = self.PreviousStyle
         self.selection.Font.Name = self.PreviousFont
