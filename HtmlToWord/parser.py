@@ -59,7 +59,7 @@ class Parser(object):
         I take HTML or a BeautifulSoup instance and return a list of parsed elements for use with Render.
         """
         if self.ReplaceNewlines:
-            html = html.replace("\n","")
+            html = html.strip("\r").strip("\n")
         if isinstance(html, basestring):
             html = BeautifulSoup.BeautifulSoup(html,convertEntities="xhtml")
 
@@ -69,11 +69,9 @@ class Parser(object):
         if isinstance(element, BeautifulSoup.NavigableString):
             return Text(element)
 
-        try:
-            ElementInstance = self.ElementMappings[element.name]()
-        except KeyError:
-            warnings.warn("Element %s is not known!"%element.name)
-            ElementInstance = IgnoredElement()
+        ElementInstance = self.ElementMappings.get(element.name, IgnoredElement)()
+        if isinstance(ElementInstance, IgnoredElement):
+            warnings.warn("Element %s is ignored"%element.name)
 
         ElementInstance.SetAttrs(dict(element.attrs))
 

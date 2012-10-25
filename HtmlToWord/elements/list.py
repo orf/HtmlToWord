@@ -8,9 +8,10 @@ class List(BaseElement):
 
     <ul>
         <li>Some text here
-        <ul>
-            <li>My parent ul tag is nested within a li tag</li>
-        </ul>
+            <ul>
+                <li>My parent ul tag is nested within a li tag</li>
+            </ul>
+        </li>
     </ul>
 
     <ul>

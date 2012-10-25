@@ -29,4 +29,4 @@ for file_name in paths:
     path = os.path.abspath(os.path.join("saved_documents",file_name+".docx"))
     print path
     document.SaveAs(path)
-    #document.Close()
+    document.Close()
