@@ -1,5 +1,5 @@
 from HtmlToWord.elements.base import *
-from HtmlToWord.elements.misc import Break
+from HtmlToWord.elements.list import List
 from win32com.client import constants
 
 class Bold(BaseElement):
@@ -55,7 +55,9 @@ class Paragraph(BaseElement):
     def EndRender(self):
         if self.HasChild("Break"):
             self.selection.Style = self.PreviousStyle
-        self.selection.TypeParagraph()
+        # Adding a paragprah after this looks weird as the list does this itself.
+        if not isinstance(self.GetChildren()[-1], List):
+            self.selection.TypeParagraph()
 
 class Pre(BaseElement):
     def StartRender(self):

@@ -16,6 +16,7 @@ except IndexError:
     paths = (path for path in os.listdir("html") if path.endswith(".html"))
 
 for file_name in paths:
+    print file_name
     document = word.Documents.Add()
 
     with open(os.path.join("html",file_name),"r") as fd:
