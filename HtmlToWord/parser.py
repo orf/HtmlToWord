@@ -23,6 +23,7 @@ ElementMappings = {
     "tbody":TableBody,
     "tr":TableRow,
     "td":TableCell,
+    "th":TableCell,
 
     "img":Image,
     "a":HyperLink,
@@ -90,6 +91,8 @@ class Parser(object):
 
     def Render(self, Word, elements, selection, Parent=None):
         for element in elements:
+            #if isinstance(element, basestring):
+            #    element = Text(element)
             element.SetWord(Word)
             element.SetParent(Parent)
             element.SetSelection(selection)

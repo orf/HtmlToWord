@@ -27,7 +27,6 @@ class Table(BaseElement):
         self._end_range = self.selection.Range
 
         rows,cells = self.GetDimentions()
-
         self.Table = self.selection.Tables.Add(rng,
             NumRows=rows,
             NumColumns=cells,
