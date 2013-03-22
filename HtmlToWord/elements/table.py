@@ -1,6 +1,7 @@
 from HtmlToWord.elements.base import *
 from win32com.client import constants
 
+
 class Table(BaseElement):
     """
     Ding dong i'm a f*****g table.
@@ -45,6 +46,7 @@ class Table(BaseElement):
 
 class TableBody(IgnoredElement):
     pass
+
 
 class TableRow(BaseElement):
     AllowedChildren = ["TableCell"]

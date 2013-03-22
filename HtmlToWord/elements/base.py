@@ -6,6 +6,7 @@ class BaseElement(object):
     AllowedChildren = []
     IgnoredChildren = []
     IsIgnored = False
+
     def __init__(self, children=None, attributes=None):
         self.children = children or []
         self.selection = None
@@ -29,7 +30,6 @@ class BaseElement(object):
             if child.GetName() in self.AllowedChildren:
                 return True
             return False # Child is not allowed :(
-
 
     def SetAttrs(self, attrs):
         self.attrs = defaultdict(lambda: None, attrs)
@@ -99,12 +99,15 @@ class BaseElement(object):
         self.EndRender()
         return False
 
+
 class IgnoredElement(BaseElement):
     IsIgnored = True
+
 
 class ChildlessElement(BaseElement):
     def IsChildAllowed(self, child):
         return False
+
 
 class HTML(BaseElement):
     pass

@@ -1,6 +1,7 @@
 from HtmlToWord.elements.base import *
 from win32com.client import constants
 
+
 class List(BaseElement):
     """
     I am a list, I can be ordered or unordered and I can have sub lists within me.
@@ -60,13 +61,16 @@ class List(BaseElement):
         """
         return None
 
+
 class OrderedList(List):
     def GetTemplate(self):
         return constants.wdNumberGallery
 
+
 class UnorderedList(List):
     def GetTemplate(self):
         return constants.wdBulletGallery
+
 
 class ListElement(BaseElement):
     IgnoredChildren = ["Break"]

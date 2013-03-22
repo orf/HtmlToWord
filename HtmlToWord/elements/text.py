@@ -2,6 +2,7 @@ from HtmlToWord.elements.base import *
 from HtmlToWord.elements.list import List
 from win32com.client import constants
 
+
 class Bold(BaseElement):
     def StartRender(self):
         self.selection.BoldRun()
@@ -9,12 +10,14 @@ class Bold(BaseElement):
     def EndRender(self):
         self.selection.BoldRun()
 
+
 class Italic(BaseElement):
     def StartRender(self):
         self.selection.ItalicRun()
 
     def EndRender(self):
         self.selection.ItalicRun()
+
 
 class UnderLine(BaseElement):
     def StartRender(self):
@@ -26,6 +29,7 @@ class UnderLine(BaseElement):
         with self.With(self.selection.Font) as Font:
             Font.UnderlineColor = constants.wdColorAutomatic
             Font.Underline = constants.wdUnderlineNone
+
 
 class Text(BaseElement):
     def __init__(self, text):
@@ -46,6 +50,7 @@ class Text(BaseElement):
     def __repr__(self):
         return "<Text: %s>"%repr(self.Text)
 
+
 class Paragraph(BaseElement):
     def StartRender(self):
         if self.HasChild("Break"):
@@ -56,8 +61,9 @@ class Paragraph(BaseElement):
         if self.HasChild("Break"):
             self.selection.Style = self.PreviousStyle
         # Adding a paragprah after this looks weird as the list does this itself.
-        if not isinstance(self.GetChildren()[-1], List):
+        if not isinstance(self.GetLastChild(), List):
             self.selection.TypeParagraph()
+
 
 class Pre(BaseElement):
     def StartRender(self):

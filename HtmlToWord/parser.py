@@ -5,40 +5,41 @@ import warnings
 #BeautifulSoup.name2codepoint["nbsp"] = ord(" ")
 
 ElementMappings = {
-    "p":Paragraph,
-    "b":Bold,
-    "strong":Bold,
-    "br":Break,
-    "div":Div,
-    "em":Italic,
-    "i":Italic,
-    "u":UnderLine,
-    "span":Span,
+    "p": Paragraph,
+    "b": Bold,
+    "strong": Bold,
+    "br": Break,
+    "div": Div,
+    "em": Italic,
+    "i": Italic,
+    "u": UnderLine,
+    "span": Span,
 
-    "ul":UnorderedList,
-    "ol":OrderedList,
-    "li":ListElement,
+    "ul": UnorderedList,
+    "ol": OrderedList,
+    "li": ListElement,
 
-    "table":Table,
-    "tbody":TableBody,
-    "tr":TableRow,
-    "td":TableCell,
-    "th":TableCell,
+    "table": Table,
+    "tbody": TableBody,
+    "tr": TableRow,
+    "td": TableCell,
+    "th": TableCell,
 
-    "img":Image,
-    "a":HyperLink,
+    "img": Image,
+    "a": HyperLink,
 
-    "h1":Heading1,
-    "h2":Heading2,
-    "h3":Heading3,
-    "h4":Heading4,
+    "h1": Heading1,
+    "h2": Heading2,
+    "h3": Heading3,
+    "h4": Heading4,
 
-    "html":HTML,
-    "pre":Pre,
+    "html": HTML,
+    "pre": Pre,
 
-    "blockquote":IgnoredElement,
-    "wbr":IgnoredElement
+    "blockquote": IgnoredElement,
+    "wbr": IgnoredElement
 }
+
 
 class Parser(object):
     def __init__(self, ElementMap=None, ReplaceNewlines=True,Word=None):

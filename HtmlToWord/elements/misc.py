@@ -1,6 +1,7 @@
 from HtmlToWord.elements.base import *
 from win32com.client import constants
 
+
 class Break(ChildlessElement):
     """
     I'm a really annoying element who gets in the way of things. I sometimes have an effect and I sometimes don't.
@@ -13,8 +14,10 @@ class Break(ChildlessElement):
     def EndRender(self):
         self.selection.TypeParagraph()
 
+
 class Div(BaseElement):
     pass
+
 
 class Span(IgnoredElement):
     pass
@@ -34,6 +37,7 @@ class Image(ChildlessElement):
             self.selection.Range.Style = self.GetDocument().Styles("caption")
             self.selection.TypeText(caption)
             #self.selection.Style = style
+
 
 class HyperLink(BaseElement):
     def StartRender(self):
