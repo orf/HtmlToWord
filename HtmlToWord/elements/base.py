@@ -61,6 +61,12 @@ class BaseElement(object):
     def IsText(self):
         return False
 
+    def GetLastChild(self):
+        if not self.children:
+            return None
+        else:
+            return self.children[-1]
+
     def GetChildren(self):
         return self.children
 
