@@ -22,6 +22,7 @@ class Div(BaseElement):
 class Span(IgnoredElement):
     pass
 
+
 class Image(ChildlessElement):
     def StartRender(self):
         url = self.GetAttrs()["src"]
@@ -44,6 +45,8 @@ class HyperLink(BaseElement):
         self.start_range = self.selection.Range.End
 
     def EndRender(self):
-        self.GetDocument().Hyperlinks.Add(Anchor=self.GetDocument().Range(Start=self.start_range,
-            End=self.selection.Range.End),
-            Address=self.GetAttrs()["href"])
+        href = self.GetAttrs()["href"]
+        if href:
+            self.GetDocument().Hyperlinks.Add(Anchor=self.GetDocument().Range(Start=self.start_range,
+                End=self.selection.Range.End),
+                Address=self.GetAttrs()["href"])
