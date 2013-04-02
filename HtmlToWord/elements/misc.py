@@ -1,5 +1,6 @@
 from HtmlToWord.elements.base import *
 from win32com.client import constants
+from HtmlToWord import groups
 
 
 class Break(ChildlessElement):
@@ -37,16 +38,19 @@ class Image(ChildlessElement):
             style = self.selection.Range.Style
             self.selection.Range.Style = self.GetDocument().Styles("caption")
             self.selection.TypeText(caption)
-            #self.selection.Style = style
 
 
 class HyperLink(BaseElement):
+    IgnoredChildren = groups.FORMAT_TAGS
+
     def StartRender(self):
         self.start_range = self.selection.Range.End
 
     def EndRender(self):
         href = self.GetAttrs()["href"]
         if href:
-            self.GetDocument().Hyperlinks.Add(Anchor=self.GetDocument().Range(Start=self.start_range,
-                End=self.selection.Range.End),
-                Address=self.GetAttrs()["href"])
+            document_range = self.GetDocument().Range(Start=self.start_range,
+                                                      End=self.selection.Range.End)
+
+            self.GetDocument().Hyperlinks.Add(Anchor=document_range,
+                                              Address=href)

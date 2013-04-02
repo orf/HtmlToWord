@@ -19,15 +19,16 @@ for file_name in paths:
     print file_name
     document = word.Documents.Add()
 
-    with open(os.path.join("html",file_name),"r") as fd:
+    with open(os.path.join("html", file_name), "r") as fd:
         Html = ""
         for line in fd:
-            line = line.replace("\n","")
+            line = line.replace("\n", "")
             line = line.rstrip().lstrip()
-            Html+=line
+            Html += line
+
     print parser.Parse(Html)
     parser.ParseAndRender(Html, word, document.ActiveWindow.Selection)
-    path = os.path.abspath(os.path.join("saved_documents",file_name+".docx"))
+    path = os.path.abspath(os.path.join("saved_documents", file_name + ".docx"))
     print path
     document.SaveAs(path)
     document.Close()

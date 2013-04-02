@@ -73,7 +73,7 @@ class Parser(object):
 
         ElementInstance = self.ElementMappings.get(element.name, IgnoredElement)()
         if isinstance(ElementInstance, IgnoredElement):
-            warnings.warn("Element %s is ignored"%element.name)
+            warnings.warn("Element %s is ignored" % element.name)
 
         ElementInstance.SetAttrs(dict(element.attrs))
 
@@ -87,17 +87,24 @@ class Parser(object):
             tchild = self._Parse(ElementInstance, child)
             if ElementInstance.IsChildAllowed(tchild) and not tchild is ElementInstance:
                 ElementInstance.Add(tchild)
+            else:
+                if ElementInstance.IsElementIgnored(tchild):
+                    # Ok, its ignored. Replace tchild with an IgnoredElement and continue on our merry way
+                    ElementInstance.Add(self._ConvertToIgnoredElement(tchild))
 
         return ElementInstance
 
+    def _ConvertToIgnoredElement(self, element):
+        new_ignored = IgnoredElement()
+        for child in element.GetChildren():
+            new_ignored.Add(child)
+        return new_ignored
+
     def Render(self, Word, elements, selection, Parent=None):
         for element in elements:
-            #if isinstance(element, basestring):
-            #    element = Text(element)
             element.SetWord(Word)
             element.SetParent(Parent)
             element.SetSelection(selection)
-
             with element as el:
                 self.Render(Word, el.GetChildren(), selection, Parent=el)
 

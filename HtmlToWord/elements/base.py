@@ -20,16 +20,16 @@ class BaseElement(object):
     def IsChildAllowed(self, child):
         assert not (self.AllowedChildren and self.IgnoredChildren), "Only AllowedChildren OR IgnoredChildren allowed"
 
-        if not self.AllowedChildren and not self.IgnoredChildren: return True
+        if not self.AllowedChildren and not self.IgnoredChildren:
+            return True
 
         if self.IgnoredChildren:
-            if child.GetName() in self.IgnoredChildren:
-                return False
-            return True # Child is not ignored
+            return not child.GetName() in self.IgnoredChildren
         else:
-            if child.GetName() in self.AllowedChildren:
-                return True
-            return False # Child is not allowed :(
+            return child.GetName() in self.AllowedChildren
+
+    def IsElementIgnored(self, element):
+        return element.GetName() in self.IgnoredChildren
 
     def SetAttrs(self, attrs):
         self.attrs = defaultdict(lambda: None, attrs)
@@ -71,7 +71,7 @@ class BaseElement(object):
         return self.children
 
     def GetAllowedChildren(self):
-        return [] # Represents any child
+        return []  # Represents any child
 
     def __str__(self):
         return self.__repr__()
@@ -94,8 +94,9 @@ class BaseElement(object):
     def GetParent(self):
         return self.parent
 
-    def GetName(self):
-        return self.__class__.__name__
+    @classmethod
+    def GetName(cls):
+        return cls.__name__
 
     def __enter__(self):
         self.StartRender()

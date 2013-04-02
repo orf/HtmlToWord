@@ -48,7 +48,7 @@ class Text(BaseElement):
         self.selection.TypeText(self.GetText())
 
     def __repr__(self):
-        return "<Text: %s>"%repr(self.Text)
+        return "<Text: %s>" % repr(self.Text)
 
 
 class Paragraph(BaseElement):
@@ -68,7 +68,7 @@ class Paragraph(BaseElement):
 class Pre(BaseElement):
     def StartRender(self):
         self.PreviousStyle = self.selection.Style
-        self.PreviousFont  = self.selection.Font.Name
+        self.PreviousFont = self.selection.Font.Name
 
         self.selection.Style = self.GetDocument().Styles("No Spacing")
         self.selection.Font.Name = "Courier New"

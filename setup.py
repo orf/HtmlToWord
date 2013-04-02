@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='HtmlToWord',
-    version='0.2.9',
+    version='0.3',
     packages=['HtmlToWord', 'HtmlToWord.elements'],
     url='https://github.com/orf/HtmlToWord',
     license='',
