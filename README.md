@@ -57,7 +57,19 @@ HtmlToWord currently supports the following HTML tags:
 ### Extending
 Extending HtmlToWord is pretty easy. Each tag is a class that inherits from BaseElement. It has two methods that are called: *StartRender* and *EndRender*. Take a look in elements/headings.py and elements/text.py for some simple examples.
 
+#### Rendering hooks / Custom styles
+The Parser class has two callbacks: preRender and postRender, which are called before and after an element is rendered.
+You can use these callbacks to modify and elements style post-rendering, for example to change all tables to a set custom style you can do the following:
 
+```python
+from HtmlToWord.elements.Table import Table
+from HtmlToWord.elements.Base import BaseElement
+
+parser.AddPostRenderCallback(Table, lambda e: e.Table.Style = constants.wdSomeTableStyleHere)
+parser.AddPostRenderCallback(BaseElement, lambda e: print("This is called for every element"))
+```
+
+Callbacks use isinstance to check, which means a callback on a parent class will call for all of the child classes.
 
 ## Rationale
 #### Why Word? Why not ODF or OpenOffice?
