@@ -1,4 +1,4 @@
-from HtmlToWord.elements.base import *
+from HtmlToWord.elements.Base import *
 from win32com.client import constants
 from HtmlToWord import groups
 
@@ -41,6 +41,7 @@ class Image(ChildlessElement):
 
 
 class HyperLink(BaseElement):
+    # Formatting tags don't work well inside hyperlinks. Ignore them.
     IgnoredChildren = groups.FORMAT_TAGS
 
     def StartRender(self):

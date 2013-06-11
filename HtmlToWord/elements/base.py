@@ -1,5 +1,6 @@
 import contextlib
 from collections import defaultdict
+import warnings
 
 
 class BaseElement(object):
@@ -15,6 +16,7 @@ class BaseElement(object):
 
     @contextlib.contextmanager
     def With(self, item):
+        """ Convenience method. Not sure why its here """
         yield item
 
     def IsChildAllowed(self, child):
@@ -92,7 +94,14 @@ class BaseElement(object):
         self.parent = parent
 
     def GetParent(self):
-        return self.parent
+        el = self.parent
+
+        while el is not None and el.IsIgnored:
+            el = el.parent
+
+        if el is None:
+            warnings.warn("Element %s has no non-IgnoredElement parents and GetParent was called on it" % self)
+        return el
 
     @classmethod
     def GetName(cls):

@@ -1,8 +1,9 @@
-from HtmlToWord.elements.base import *
+from HtmlToWord.elements.Base import *
 
 
 class BaseHeading(BaseElement):
     StyleName = None
+
     def StartRender(self):
         self.selection.Style = self.GetDocument().Styles(self.StyleName)
 

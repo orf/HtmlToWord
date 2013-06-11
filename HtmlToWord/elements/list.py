@@ -1,4 +1,4 @@
-from HtmlToWord.elements.base import *
+from HtmlToWord.elements.Base import *
 from win32com.client import constants
 
 
@@ -74,6 +74,7 @@ class UnorderedList(List):
 
 class ListElement(BaseElement):
     IgnoredChildren = ["Break"]
+
     def EndRender(self):
         # A bit of a hack but whatever. If the last child is a OrderedList or UnorderedList
         # then we have a nested sub-list. Don't start a new paragraph because the List will

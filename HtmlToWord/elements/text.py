@@ -1,5 +1,5 @@
-from HtmlToWord.elements.base import *
-from HtmlToWord.elements.list import List
+from HtmlToWord.elements.Base import *
+from HtmlToWord.elements.List import List
 from win32com.client import constants
 
 

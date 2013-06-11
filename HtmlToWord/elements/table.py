@@ -1,4 +1,4 @@
-from HtmlToWord.elements.base import *
+from HtmlToWord.elements.Base import *
 from win32com.client import constants
 
 
@@ -20,21 +20,20 @@ class Table(BaseElement):
             rows = len(self.GetChildren())
         cells = len(self.GetChildren()[0].GetChildren())
 
-        return rows,cells
+        return rows, cells
 
     def StartRender(self):
         rng = self.selection.Range
         self.selection.TypeParagraph()
         self._end_range = self.selection.Range
 
-        rows,cells = self.GetDimentions()
+        rows, cells = self.GetDimentions()
         self.Table = self.selection.Tables.Add(rng,
-            NumRows=rows,
-            NumColumns=cells,
-            AutoFitBehavior=constants.wdAutoFitFixed,
-        )
+                                               NumRows=rows,
+                                               NumColumns=cells,
+                                               AutoFitBehavior=constants.wdAutoFitFixed)
 
-        for count,child in enumerate(self.GetChildren()):
+        for count, child in enumerate(self.GetChildren()):
             child.SetRow(self.Table.Rows(count+1))
 
         self.Table.Style = "Table Grid"
@@ -43,6 +42,7 @@ class Table(BaseElement):
     def EndRender(self):
         self.Table.Columns.AutoFit()
         self._end_range.Select()
+
 
 class TableBody(IgnoredElement):
     pass
@@ -60,13 +60,12 @@ class TableRow(BaseElement):
 
     def StartRender(self):
 
-        for count,child in enumerate(self.GetChildren()):
-            assert child.GetName() == "TableCell", "Child of TableRow is not TableCell! Its %s"%child.GetName()
+        for count, child in enumerate(self.GetChildren()):
+            assert child.GetName() == "TableCell", "Child of TableRow is not TableCell! Its %s" % child.GetName()
             child.SetCell(self.Row.Cells(count+1))
 
 
 class TableCell(BaseElement):
-
     def SetCell(self, Cell):
         self.Cell = Cell
 
