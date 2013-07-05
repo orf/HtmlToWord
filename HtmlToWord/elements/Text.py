@@ -40,19 +40,21 @@ class Text(BaseElement):
         return True
 
     def GetText(self):
-        child_index = self.GetParent().GetChildIndex(self)
-        if child_index == 0:
-            previous = self.GetParent()
-        else:
-            previous = self.GetParent().GetChildren()[child_index - 1]
-
+        parent = self.GetParent()
         txt = self.Text
 
-        if previous.StripTextAfter or (self.GetParent().StripFirstElementText and child_index == 0):
-            txt = txt.lstrip()
+        if parent is not None:
+            child_index = parent.GetChildIndex(self)
+            previous = parent
 
-        if child_index == len(self.GetParent().GetChildren()) - 1:
-            txt = txt.rstrip()
+            if child_index != 0:
+                previous = self.GetParent().GetChildren()[child_index - 1]
+
+            if previous.StripTextAfter or (parent.StripFirstElementText and child_index == 0):
+                txt = txt.lstrip()
+
+            if child_index == len(parent.GetChildren()) - 1:
+                txt = txt.rstrip()
 
         return txt
 
