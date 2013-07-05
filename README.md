@@ -1,12 +1,14 @@
 HtmlToWord
 ===
-This module was created for use in an application that uses Word to generate reports based on HTML input from a web frontend. You can use it like so:
+This module was created for use in an application that uses Word to generate reports based on HTML input from a web based WYSIWYG editor. You can use it like so:
 
 ```python
 import HtmlToWord, win32com.client
 
+# This opens Microsoft Word, ready for automation
 word = win32com.client.gencache.EnsureDispatch("Word.Application")
 word.Visible = True # Don't set this to True in production!
+# Create a new document and our Parser class
 document = word.Documents.Add()
 parser = HtmlToWord.Parser()
 
@@ -18,10 +20,15 @@ Html = """
     <li>Boo! I am a <b>list</b></li>
 </ul>
 """
+# Feed in our HTML, passing the Word instance and a Selection object. 
 parser.ParseAndRender(Html, word, document.ActiveWindow.Selection)
 ```
 
 This will insert a representation of that HTML into the word document, including the image, caption and list.
+
+
+### Install
+Get it [from PyPi here](https://pypi.python.org/pypi/HtmlToWord). It is only tested with Word 2010, but it may still work with 2007.
 
 ### Limitations
 Its not perfect, but it works. This is created for use with [Redactor](http://imperavi.com/redactor/) as the HTML it generates is very clean and fairly simple to parse. Other editors may vary.
