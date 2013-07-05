@@ -20,21 +20,13 @@ Html = """
 """
 parser.ParseAndRender(Html, word, document.ActiveWindow.Selection)
 ```
-Or if you don't want to use HTML you can create a tree of tags yourself (List elements omitted):
-```python
-from HtmlToWord.elements import *
-parser.Render(word, [
-   Heading3([Text("This is a title")]),
-   Paragraph([Image(attributes={"src":"http://placehold.it/150x150","alt":"I go below"})]),
-   Paragraph([
-      Italic([Text("This is "), Bold([Text("some")]), Text(" text")]),
-      Text(" in a "),
-      HyperLink([Text("paragraph")], {"href":"http://google.com"}),
-   ])
-], document.ActiveWindow.Selection)
-```
 
-## Supported tags and extentions
+This will insert a representation of that HTML into the word document, including the image, caption and list.
+
+### Limitations
+Its not perfect, but it works. This is created for use with [Redactor](http://imperavi.com/redactor/) as the HTML it generates is very clean and fairly simple to parse. Other editors may vary.
+
+## Supported tags and extensions
 
 HtmlToWord currently supports the following HTML tags:
  * p
@@ -59,16 +51,19 @@ HtmlToWord currently supports the following HTML tags:
 Extending HtmlToWord is pretty easy. Each tag is a class that inherits from BaseElement. It has two methods that are called: *StartRender* and *EndRender*. Take a look in elements/headings.py and elements/text.py for some simple examples.
 
 #### Rendering hooks / Custom styles
-The Parser class has two callbacks: preRender and postRender, which are called before and after an element is rendered.
+The Parser class has three callbacks: preRender, Render and postRender, which are called before, during and after an element is rendered.
 You can use these callbacks to modify and elements style post-rendering, for example to change all tables to a set custom style you can do the following (e is the Element instance)
 
 ```python
 from HtmlToWord.elements.Table import Table
 from HtmlToWord.elements.Base import BaseElement
+from HtmlToWord.elements.Text import Pre
 
 # List of styles: http://msdn.microsoft.com/en-us/library/office/ff835210(v=office.14).aspx
 parser.AddPostRenderCallback(Table, lambda e: setattr(e.Table, "Style", constants.wdSomeTableStyleHere))
 parser.AddPostRenderCallback(BaseElement, lambda e: print("This is called for every element"))
+# Gives all pre tags a grey-ish background. For use with code.
+parser.AddRenderCallback(Pre, lambda e: setattr(e.selection.Shading, "BackgroundPatternColor", -603923969))
 ```
 
 Callbacks use isinstance to check, which means a callback on a parent class will call for all of the child classes.
