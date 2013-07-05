@@ -73,10 +73,12 @@ class Parser(object):
         """
 
         if isinstance(html, basestring):
-            html = BeautifulSoup.BeautifulSoup(html, convertEntities="xhtml")
+            old_html = html
+            html = BeautifulSoup.BeautifulSoup(old_html, convertEntities="xhtml")
             if html.findChild("html") is None:
                 # No HTML root tag.
-                html = BeautifulSoup.BeautifulSoup("<html>%s</html>" % html.renderContents())
+                html = BeautifulSoup.BeautifulSoup("<html>%s</html>" % old_html,
+                                                   convertEntities="xhtml")
 
         return (item for item in (self._Parse(None, child)
                                   for child in html.childGenerator())
