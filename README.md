@@ -66,7 +66,8 @@ You can use these callbacks to modify and elements style post-rendering, for exa
 from HtmlToWord.elements.Table import Table
 from HtmlToWord.elements.Base import BaseElement
 
-parser.AddPostRenderCallback(Table, lambda e: e.Table.Style = constants.wdSomeTableStyleHere)
+# List of styles: http://msdn.microsoft.com/en-us/library/office/ff835210(v=office.14).aspx
+parser.AddPostRenderCallback(Table, lambda e: setattr(e.Table, "Style", constants.wdSomeTableStyleHere))
 parser.AddPostRenderCallback(BaseElement, lambda e: print("This is called for every element"))
 ```
 
