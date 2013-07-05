@@ -74,7 +74,9 @@ class Parser(object):
 
         if isinstance(html, basestring):
             html = BeautifulSoup.BeautifulSoup(html, convertEntities="xhtml")
-            html.prettify()
+            if html.findChild("html") is None:
+                # No HTML root tag.
+                html = BeautifulSoup.BeautifulSoup("<html>%s</html>" % html.renderContents())
 
         return (item for item in (self._Parse(None, child)
                                   for child in html.childGenerator())
