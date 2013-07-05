@@ -28,7 +28,7 @@ This will insert a representation of that HTML into the word document, including
 
 
 ### Install
-Get it [from PyPi here](https://pypi.python.org/pypi/HtmlToWord)
+Get it [from PyPi here](https://pypi.python.org/pypi/HtmlToWord). It is only tested with Word 2010, but it may still work with 2007.
 
 ### Limitations
 Its not perfect, but it works. This is created for use with [Redactor](http://imperavi.com/redactor/) as the HTML it generates is very clean and fairly simple to parse. Other editors may vary.
