@@ -8,6 +8,12 @@ class BaseElement(object):
     IgnoredChildren = []
     IsIgnored = False
 
+    # StripTextAfter is used by elements that contain text, such as paragraphs. Text objects after will be stripped
+    # of any whitespace
+    StripTextAfter = False
+    # StripAfterFirstElement is used by Paragraphs. The first child element (if its text) will be stripped of whitespace.
+    StripFirstElementText = False
+
     def __init__(self, children=None, attributes=None):
         self.children = children or []
         self.selection = None
@@ -79,7 +85,7 @@ class BaseElement(object):
         return self.__repr__()
 
     def __repr__(self):
-        return "<%s: Children = %s>"%(self.__class__.__name__, self.children)
+        return "<%s: Children = %s>" % (self.__class__.__name__, self.children)
 
     def SetSelection(self, selection):
         self.selection = selection
@@ -102,6 +108,13 @@ class BaseElement(object):
         if el is None:
             warnings.warn("Element %s has no non-IgnoredElement parents and GetParent was called on it" % self)
         return el
+
+    def GetChildIndex(self, child):
+        try:
+            return self.GetChildren().index(child)
+        except ValueError:
+            warnings.warn("Element %s is not in %s's children" % (child, self))
+            return None
 
     @classmethod
     def GetName(cls):

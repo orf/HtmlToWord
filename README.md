@@ -52,6 +52,7 @@ HtmlToWord currently supports the following HTML tags:
  * td
  * img
  * a
+ * pre
  * h1/2/3/4
 
 ### Extending
@@ -59,7 +60,7 @@ Extending HtmlToWord is pretty easy. Each tag is a class that inherits from Base
 
 #### Rendering hooks / Custom styles
 The Parser class has two callbacks: preRender and postRender, which are called before and after an element is rendered.
-You can use these callbacks to modify and elements style post-rendering, for example to change all tables to a set custom style you can do the following:
+You can use these callbacks to modify and elements style post-rendering, for example to change all tables to a set custom style you can do the following (e is the Element instance)
 
 ```python
 from HtmlToWord.elements.Table import Table

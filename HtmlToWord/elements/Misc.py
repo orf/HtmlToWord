@@ -12,6 +12,8 @@ class Break(ChildlessElement):
     I still have a few bugs to do with me being nested in tags and then those tags being in paragraphs and lists,
     but screw it.
     """
+    StripTextAfter = True
+
     def EndRender(self):
         self.selection.TypeParagraph()
 

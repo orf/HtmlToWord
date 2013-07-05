@@ -25,7 +25,7 @@ class List(BaseElement):
 
     """
 
-    AllowedChildren = ["ListElement", "OrderedList","UnorderedList"]
+    AllowedChildren = ["ListElement", "OrderedList", "UnorderedList"]
 
     def StartRender(self):
         parent = self.GetParent()
@@ -83,5 +83,5 @@ class ListElement(BaseElement):
         if len(self.GetChildren()):
             last_child = self.GetChildren()[-1].GetName()
 
-        if not last_child in ("OrderedList","UnorderedList"):
+        if not last_child in ("OrderedList", "UnorderedList"):
             self.selection.TypeParagraph()

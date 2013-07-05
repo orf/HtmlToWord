@@ -66,6 +66,8 @@ class TableRow(BaseElement):
 
 
 class TableCell(BaseElement):
+    StripTextAfter = True
+
     def SetCell(self, Cell):
         self.Cell = Cell
 

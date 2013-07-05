@@ -40,10 +40,27 @@ class Text(BaseElement):
         return True
 
     def GetText(self):
-        return self.Text
+        child_index = self.GetParent().GetChildIndex(self)
+        if child_index == 0:
+            previous = self.GetParent()
+        else:
+            previous = self.GetParent().GetChildren()[child_index - 1]
+
+        txt = self.Text
+
+        if previous.StripTextAfter or (self.GetParent().StripFirstElementText and child_index == 0):
+            txt = txt.lstrip()
+
+        if child_index == len(self.GetParent().GetChildren()) - 1:
+            txt = txt.rstrip()
+
+        return txt
+
+    def SetText(self, text):
+        self.Text = text
 
     def StartRender(self):
-        if self.GetText() == "\n":
+        if self.Text.isspace():
             return
         self.selection.TypeText(self.GetText())
 
@@ -52,6 +69,8 @@ class Text(BaseElement):
 
 
 class Paragraph(BaseElement):
+    StripTextAfter = True
+
     def StartRender(self):
         if self.HasChild("Break"):
             self.PreviousStyle = self.selection.Style
@@ -66,12 +85,15 @@ class Paragraph(BaseElement):
 
 
 class Pre(BaseElement):
+    StripFirstElementText = True
+
     def StartRender(self):
         self.PreviousStyle = self.selection.Style
         self.PreviousFont = self.selection.Font.Name
 
         self.selection.Style = self.GetDocument().Styles("No Spacing")
         self.selection.Font.Name = "Courier New"
+        self.selection.Font.Size = 7
 
     def EndRender(self):
         self.selection.ParagraphFormat.LineSpacingRule = constants.wdLineSpace1pt5

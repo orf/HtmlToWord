@@ -23,11 +23,7 @@ for file_name in paths:
     document = word.Documents.Add()
 
     with open(os.path.join("html", file_name), "r") as fd:
-        Html = ""
-        for line in fd:
-            line = line.replace("\n", "")
-            line = line.rstrip().lstrip()
-            Html += line
+        Html = fd.read()
     print "Parsed HTML:"
     pprint.pprint(list(parser.Parse(Html)))
     print "Rendering..."
