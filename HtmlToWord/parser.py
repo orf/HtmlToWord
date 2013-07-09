@@ -135,8 +135,9 @@ class Parser(object):
                 continue
 
             with element as el:
-                self.runCallbacks(element, self.renderHooks)
-                self.Render(Word, el.GetChildren(), selection, Parent=el)
+                if el is not None:
+                    self.runCallbacks(element, self.renderHooks)
+                    self.Render(Word, el.GetChildren(), selection, Parent=el)
 
             self.runCallbacks(element, self.postRenderHooks)
 

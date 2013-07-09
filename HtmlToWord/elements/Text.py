@@ -32,7 +32,7 @@ class UnderLine(BaseElement):
             Font.Underline = constants.wdUnderlineNone
 
 
-class Text(BaseElement):
+class Text(ChildlessElement):
     _COLLAPSE_REGEX = re.compile(r'\s+')
 
     def __init__(self, text):
@@ -58,9 +58,9 @@ class Text(BaseElement):
                 # We are the first child or our parent is telling us to strip :O
                 txt = txt.lstrip()
 
-            if child_index == len(parent.GetChildren()) - 1:
+            #if child_index == len(parent.GetChildren()) - 1:
                 # We are the last child, strip from the right
-                txt = txt.rstrip()
+            #    txt = txt.rstrip()
 
             if not isinstance(parent, Pre):
                 txt = self._COLLAPSE_REGEX.sub(' ', txt)

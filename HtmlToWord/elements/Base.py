@@ -19,6 +19,7 @@ class BaseElement(object):
         self.selection = None
         self.parent = None
         self.attrs = attributes or {}
+        self.__shouldCallEndRender = True
 
     @contextlib.contextmanager
     def With(self, item):
@@ -69,6 +70,9 @@ class BaseElement(object):
     def IsText(self):
         return False
 
+    def IsEmpty(self):
+        return len(self.GetChildren()) == 0
+
     def GetLastChild(self):
         if not self.children:
             return None
@@ -96,6 +100,34 @@ class BaseElement(object):
     def EndRender(self):
         return
 
+    def _StartRender(self):
+        if not isinstance(self, ChildlessElement):
+            # We are not a childless element, if we are empty or all our children are
+            # then we don't render
+            if self.IsEmpty():
+                self.__shouldCallEndRender = False
+                return
+
+            o = self
+            while len(o.GetChildren()) <= 1:
+                # While the count of o's children is 0 or 1
+
+                if isinstance(o, ChildlessElement):
+                    break
+
+                if o.IsEmpty():
+                    self.__shouldCallEndRender = False
+                    return
+
+                o = o.GetChildren()[0]
+
+        self.StartRender()
+        return True
+
+    def _EndRender(self):
+        if self.__shouldCallEndRender:
+            self.EndRender()
+
     def SetParent(self, parent):
         self.parent = parent
 
@@ -121,11 +153,11 @@ class BaseElement(object):
         return cls.__name__
 
     def __enter__(self):
-        self.StartRender()
-        return self
+        if self._StartRender():
+            return self
 
     def __exit__(self, *args, **kwargs):
-        self.EndRender()
+        self._EndRender()
         return False
 
 
