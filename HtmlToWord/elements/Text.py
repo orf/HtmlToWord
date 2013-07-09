@@ -1,6 +1,7 @@
 from HtmlToWord.elements.Base import *
 from HtmlToWord.elements.List import List
 from win32com.client import constants
+import re
 
 
 class Bold(BaseElement):
@@ -32,6 +33,8 @@ class UnderLine(BaseElement):
 
 
 class Text(BaseElement):
+    _COLLAPSE_REGEX = re.compile(r'\W+')
+
     def __init__(self, text):
         super(Text, self).__init__()
         self.Text = text
@@ -48,13 +51,19 @@ class Text(BaseElement):
             previous = parent
 
             if child_index != 0:
+                # We are not the first child
                 previous = self.GetParent().GetChildren()[child_index - 1]
 
             if previous.StripTextAfter or (parent.StripFirstElementText and child_index == 0):
+                # We are the first child or our parent is telling us to strip :O
                 txt = txt.lstrip()
 
             if child_index == len(parent.GetChildren()) - 1:
+                # We are the last child, strip from the right
                 txt = txt.rstrip()
+
+            if not isinstance(parent, Pre):
+                txt = self._COLLAPSE_REGEX.sub(' ', txt)
 
         return txt
 
@@ -88,6 +97,7 @@ class Paragraph(BaseElement):
 
 class Pre(BaseElement):
     StripFirstElementText = True
+    PRE_FORMATTED = True
 
     def StartRender(self):
         self.PreviousStyle = self.selection.Style
