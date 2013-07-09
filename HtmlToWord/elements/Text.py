@@ -33,7 +33,7 @@ class UnderLine(BaseElement):
 
 
 class Text(BaseElement):
-    _COLLAPSE_REGEX = re.compile(r'\W+')
+    _COLLAPSE_REGEX = re.compile(r'\s+')
 
     def __init__(self, text):
         super(Text, self).__init__()
