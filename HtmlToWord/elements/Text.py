@@ -91,7 +91,8 @@ class Paragraph(BaseElement):
         if self.HasChild("Break"):
             self.selection.Style = self.PreviousStyle
         # Adding a paragprah after this looks weird as the list does this itself.
-        if not isinstance(self.GetLastChild(), List) and self.GetParent().GetLastChild() != self:
+        from HtmlToWord.elements.Misc import Image
+        if not isinstance(self.GetLastChild(), (List, Image)) and self.GetParent().GetLastChild() != self:
             self.selection.TypeParagraph()
 
 

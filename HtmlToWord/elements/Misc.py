@@ -40,6 +40,7 @@ class Image(ChildlessElement):
             style = self.selection.Range.Style
             self.selection.Range.Style = self.GetDocument().Styles("caption")
             self.selection.TypeText(caption)
+            self.selection.TypeParagraph()
 
 
 class HyperLink(BaseElement):
