@@ -24,6 +24,7 @@ ElementMappings = {
 
     "table": Table,
     "tbody": TableBody,
+    "thead": TableHead,
     "tr": TableRow,
     "td": TableCell,
     "th": TableCell,

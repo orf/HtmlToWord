@@ -39,13 +39,13 @@ for file_name in paths:
         print "Element %s" % element
         if isinstance(element, Table):
             # Styles: http://msdn.microsoft.com/en-us/library/office/ff835210(v=office.14).aspx
-            element.Table.Style = -178
+            if element.HasHeader:
+                element.Table.Style = -178
 
     parser.AddPostRenderCallback(BaseElement, _postRenderHook)
 
     parser.ParseAndRender(Html, word, document.ActiveWindow.Selection)
     path = os.path.abspath(os.path.join("saved_documents", file_name + ".docx"))
-
 
     document.SaveAs(path)
     document.Close()

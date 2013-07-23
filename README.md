@@ -36,23 +36,34 @@ Its not perfect, but it works. This is created for use with [Redactor](http://im
 ## Supported tags and extensions
 
 HtmlToWord currently supports the following HTML tags:
+
+#### Typography
  * p
  * b / strong
  * br
- * div
- * em / i
+ * em
+ * i
  * u
+ * h1/2/3/4
+ * pre
+
+#### Tables
+ * table
+ * tbody
+ * thead
+ * tr
+ * td
+
+#### Lists
  * ul
  * ol
  * li
- * table
- * tbody
- * tr
- * td
+
+#### Misc
+ * div
  * img
  * a
- * pre
- * h1/2/3/4
+
 
 ### Extending
 Extending HtmlToWord is pretty easy. Each tag is a class that inherits from BaseElement. It has two methods that are called: *StartRender* and *EndRender*. Take a look in elements/headings.py and elements/text.py for some simple examples.

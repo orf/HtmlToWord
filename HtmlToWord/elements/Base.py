@@ -82,6 +82,16 @@ class BaseElement(object):
     def GetChildren(self):
         return self.children
 
+    def GetChildByName(self, name):
+        """
+        Returns (idx, child) or None
+        """
+        for idx,child in enumerate(self.GetChildren()):
+            if child.GetName() == name:
+                return idx, child
+
+        return None, None
+
     def GetAllowedChildren(self):
         return []  # Represents any child
 
