@@ -95,6 +95,19 @@ class BaseElement(object):
     def GetAllowedChildren(self):
         return []  # Represents any child
 
+    def DelegateChildrenToElement(self, new_parent):
+        """
+        Give me an element (with no children) and I will fill it with my current children. E.G:
+        <p>text</p> -> DelegateChildren(Bold()) -> <p><strong>text</strong></p>
+        """
+        new_parent.SetParent(self)
+
+        for child in self.GetChildren():
+            child.SetParent(new_parent)
+            new_parent.Add(child)
+
+        self.children = [new_parent]
+
     def __str__(self):
         return self.__repr__()
 
