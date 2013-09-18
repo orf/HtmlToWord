@@ -47,7 +47,7 @@ ElementMappings = {
 
 class Parser(object):
     def __init__(self, ElementMap=None, Word=None):
-        self.ElementMappings = ElementMap or ElementMappings
+        self.ElementMappings = ElementMap or ElementMappings.copy()
         self.Word = Word
 
         # Rendering hooks:
