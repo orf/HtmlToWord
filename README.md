@@ -89,3 +89,7 @@ Callbacks use isinstance to check, which means a callback on a parent class will
 ## Rationale
 #### Why Word? Why not ODF or OpenOffice?
 Time. Words Object Model is [very well documented](http://msdn.microsoft.com/en-us/library/ff837519) with lots of samples available on the internet - any .NET code in VB or C# can be translated pretty easily. On top of this you can record Macro's within Word that generates Visual Basic code while you play with a document, meaning its very quick to find out how to do things. ODF looks cool, but again i'm not getting any younger and word's COM interface ticked all the boxes. In the future I might expand this module to generate ODF XML, but for now its a pipe dream.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/orf/htmltoword/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
