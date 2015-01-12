@@ -30,12 +30,17 @@ class Image(ChildlessElement):
     def StartRender(self):
         url = self.GetAttrs()["src"]
         caption = self.GetAttrs()["alt"]
+        height = self.GetAttrs()["height"]
+        width = self.GetAttrs()["width"]
         self.Image = self.selection.InlineShapes.AddPicture(FileName=url)
         with self.With(self.Image.Borders) as Borders:
             Borders.OutsideLineStyle = constants.wdLineStyleSingle
             Borders.OutsideColor = constants.wdColorPaleBlue
+        if height:
+            self.Image.Height = height
+        if width:
+            self.Image.Width = width
         self.selection.TypeParagraph()
-
         if caption:
             style = self.selection.Range.Style
             self.selection.Range.Style = self.GetDocument().Styles("caption")
