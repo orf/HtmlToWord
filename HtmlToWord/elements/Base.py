@@ -23,7 +23,13 @@ class BaseElement(object):
 
     @contextlib.contextmanager
     def With(self, item):
-        """ Convenience method. Not sure why its here """
+        """
+        Convenience method. If you need to access a nested object like something.somethingelse.someitem several times
+        then a COM request will be issued for each nested object each time you access it. Use this instead of 
+        temp = something.somethingelse.someitem
+        temp.method()
+        temp.method2()
+        """
         yield item
 
     def IsChildAllowed(self, child):
