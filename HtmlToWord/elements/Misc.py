@@ -22,7 +22,7 @@ class Div(BaseElement):
     pass
 
 
-class Span(IgnoredElement):
+class Span(BaseElement):
     pass
 
 
@@ -61,5 +61,4 @@ class HyperLink(BaseElement):
             document_range = self.GetDocument().Range(Start=self.start_range,
                                                       End=self.selection.Range.End)
 
-            self.GetDocument().Hyperlinks.Add(Anchor=document_range,
-                                              Address=href)
+            self.GetDocument().Hyperlinks.Add(Anchor=document_range, Address=href)
