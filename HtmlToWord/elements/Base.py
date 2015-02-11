@@ -3,6 +3,34 @@ from collections import defaultdict
 import warnings
 
 
+def getWdColorFromRGB(rgbAttr):
+    """
+    receive an rgb color attribute string like 'rgb(149, 55, 52)' and tranform it to a numeric constant
+    in order to use it as a Selection.Font.Color attribute (as an item of WdColor enumeration)
+    """
+    try:
+        values = rgbAttr[rgbAttr.find('(')+1:rgbAttr.find(')')].split(',')
+    except:
+        warnings.warn("getWdColorFromRGB: not possible to parse the RGB string '%s' " % rgbAttr)
+        return None
+    else:
+        rgbstrlst = [v.strip() for v in values]
+        return (int(rgbstrlst[0]) + 0x100 * int(rgbstrlst[1]) + 0x10000 * int(rgbstrlst[2]))
+
+
+def getPointsFromPx(px_str):
+    """
+    receive an string representing the font-size attribute value in px (e.g. '16px') and tranform it
+    to the equivalent value in points
+    """
+    try:
+        px = px_str.split('px')[0]
+        return int(px)*0.75
+    except ValueError, IndexError:
+        warnings.warn("Unable to tranform the value '%s' points" % px_str)
+        return None
+
+
 class BaseElement(object):
     AllowedChildren = []
     IgnoredChildren = []
@@ -98,6 +126,28 @@ class BaseElement(object):
 
         return None, None
 
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = self.document.Range(start_pos, end_pos)
+        for attribute, value in self.attrs.items():
+            try:
+                if attribute=='class':
+                    rng.Style=value
+                if attribute == 'style':
+                    styles=[[s.strip() for s in x.split(':')] for x in value.split(';') if x != ""]
+                    for style, val in styles:
+                        if style=='font-size':
+                            fontsize = getPointsFromPx(val)
+                            if fontsize:
+                                rng.Font.Size = fontsize
+                        elif style=="color":
+                            color = getWdColorFromRGB(val)
+                            if color:
+                                rng.Font.Color = color
+                        else:
+                            warnings.warn("Unable to process the style '%s' with value '%s'" % (style, val))
+            except Exception as e:
+                warnings.warn("Error in applying formatting - %s" % e.message)
+
     def GetAllowedChildren(self):
         return []  # Represents any child
 
@@ -150,11 +200,14 @@ class BaseElement(object):
 
                 o = o.GetChildren()[0]
 
+        self.start_pos = self.document.ActiveWindow.Selection.Start
         self.StartRender()
         return True
 
     def _EndRender(self):
         if self.__shouldCallEndRender:
+            end_pos = self.document.ActiveWindow.Selection.End
+            self.ApplyFormatting(self.start_pos, end_pos)
             self.EndRender()
 
     def SetParent(self, parent):
