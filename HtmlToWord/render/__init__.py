@@ -2,6 +2,7 @@ import abc
 import functools
 import inspect
 import contextlib
+from ..operations import ChildlessOperation
 
 
 def renders(operation):
@@ -11,6 +12,9 @@ def renders(operation):
         @functools.wraps(func)
         def _inner(*args, **kwargs):
             return func(*args, **kwargs)
+
+        if isinstance(operation, ChildlessOperation):
+            pass  # ToDo: Do we need a context manager if it is a childless op? No. Handle it somehow.
 
         return contextlib.contextmanager(_inner)
 

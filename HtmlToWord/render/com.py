@@ -14,4 +14,3 @@ class COMRenderer(Renderer):
     @renders(Text)
     def text(self, op):
         print(op.text)
-        yield
