@@ -1,1 +1,1 @@
-from HtmlToWord.parser import Parser
+__author__ = 'Tom'

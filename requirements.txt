@@ -1,4 +1,0 @@
-BeautifulSoup>=3.2.1
-# PyWin32 is required, it is ommited here because both pip and easy_install cannot install it. Do it manually:
-# http://sourceforge.net/projects/pywin32/files/pywin32/
-#pywin32
