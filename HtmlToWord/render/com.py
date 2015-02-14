@@ -9,7 +9,10 @@ class COMRenderer(Renderer):
     @renders(HyperLink)
     def hyperlink(self, op):
         print(op.href)
+        start = self.range.Start
         yield
+        end = self.range.End
+        # Make a range and turn it into a hyperlink or something
         print("end of hyperlink")
 
     @renders(Text)
