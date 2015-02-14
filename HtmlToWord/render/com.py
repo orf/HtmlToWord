@@ -10,6 +10,7 @@ class COMRenderer(Renderer):
     def hyperlink(self, op):
         print(op.href)
         yield
+        print("end of hyperlink")
 
     @renders(Text)
     def text(self, op):
