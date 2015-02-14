@@ -51,7 +51,7 @@ class HTMLParser(BaseParser):
         cls = self.mapping.get(element.name, IgnoredElement)
 
         if cls is Image:
-            cls = partial(HyperLink, location=element.attrs["src"])
+            cls = partial(Image, location=element.attrs["src"])
         elif cls is HyperLink:
             cls = partial(HyperLink, href=element.attrs["href"])
 
