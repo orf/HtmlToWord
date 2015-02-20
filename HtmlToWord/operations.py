@@ -3,6 +3,7 @@ import pprint
 
 class Operation(object):
     requires = set()
+    optional = set()
 
     def __init__(self, children=None, **kwargs):
         self.children = children or []
@@ -19,19 +20,26 @@ class Operation(object):
     def add_children(self, children):
         self.children.extend(children)
 
+    def has_child(self, child_class):
+        return any(isinstance(c, child_class) for c in self.children)
+
     def __repr__(self):
         return "<{0}: {1}>".format(self.__class__.__name__, self.children)
 
 
 class ChildlessOperation(Operation):
-    def __init__(self):
-        super().__init__([])
+    def __init__(self, **kwargs):
+        kwargs["children"] = []
+        super().__init__(**kwargs)
 
     def __repr__(self):
         return "<{0}>".format(self.__class__.__name__)
 
+    def has_child(self, child_class):
+        return False
 
-class IgnoredElement(Operation):
+
+class IgnoredOperation(Operation):
     pass
 
 
@@ -52,9 +60,7 @@ class UnderLine(Operation):
 
 
 class Text(ChildlessOperation):
-    def __init__(self, text):
-        self.text = text
-        super().__init__()
+    requires = {"text"}
 
 
 class Paragraph(Operation):
@@ -71,13 +77,37 @@ class CodeBlock(Operation):
     pass
 
 
-class Font(Operation):
+class LineBreak(ChildlessOperation):
+    pass
+
+
+class Style(Operation):
     requires = {"name"}
 
 
-class Image(Operation):
-    requires = {"src"}
+class Font(Operation):
+    optional = {"size", "color"}
+
+
+class Image(ChildlessOperation):
+    requires = {"location"}
 
 
 class HyperLink(Operation):
-    requires = {"href"}
+    requires = {"location"}
+
+
+class List(Operation):
+    pass
+
+
+class BulletList(List):
+    pass
+
+
+class NumberedList(List):
+    pass
+
+
+class ListElement(Operation):
+    pass

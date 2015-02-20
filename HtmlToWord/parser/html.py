@@ -1,6 +1,6 @@
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
-    CodeBlock, Group, IgnoredElement, Font, Image, HyperLink
+    CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList, NumberedList, ListElement
 import bs4
 from functools import partial
 
@@ -17,10 +17,14 @@ class HTMLParser(BaseParser):
             "pre": CodeBlock,
             "div": Group,
 
-            "h1": partial(Font, name="Heading 1"),
-            "h2": partial(Font, name="Heading 2"),
-            "h3": partial(Font, name="Heading 3"),
-            "h4": partial(Font, name="Heading 4"),
+            "h1": partial(Style, name="Heading 1"),
+            "h2": partial(Style, name="Heading 2"),
+            "h3": partial(Style, name="Heading 3"),
+            "h4": partial(Style, name="Heading 4"),
+
+            "ul": BulletList,
+            "ol": NumberedList,
+            "li": ListElement,
 
             "img": Image,
             "a": HyperLink,
@@ -46,14 +50,15 @@ class HTMLParser(BaseParser):
         if isinstance(element, bs4.NavigableString):
             if element.isspace():
                 return None
-            return Text(str(element))
 
-        cls = self.mapping.get(element.name, IgnoredElement)
+            return Text(text=str(element.strip()))
+
+        cls = self.mapping.get(element.name, IgnoredOperation)
 
         if cls is Image:
             cls = partial(Image, location=element.attrs["src"])
         elif cls is HyperLink:
-            cls = partial(HyperLink, href=element.attrs["href"])
+            cls = partial(HyperLink, location=element.attrs["href"])
 
         instance = cls()
 
