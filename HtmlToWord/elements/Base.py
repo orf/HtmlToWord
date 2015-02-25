@@ -130,8 +130,11 @@ class BaseElement(object):
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
             try:
-                if attribute=='class':
-                    rng.Style=value
+                if attribute=='class' and value:
+                    try:
+                        rng.Style=value
+                    except:
+                        warnings.warn("Unable to apply the class '%s'" % (value, ))
                 if attribute == 'style':
                     styles=[[s.strip() for s in x.split(':')] for x in value.split(';') if x != ""]
                     for style, val in styles:
@@ -205,9 +208,16 @@ class BaseElement(object):
         return True
 
     def _EndRender(self):
+        if hasattr(self, 'Cell'):
+            start_pos = self.Cell.Range.Start
+            end_pos = self.Cell.Range.End
+        else:
+            start_pos = self.start_pos
+            end_pos = self.document.ActiveWindow.Selection.End
+
         if self.__shouldCallEndRender:
             end_pos = self.document.ActiveWindow.Selection.End
-            self.ApplyFormatting(self.start_pos, end_pos)
+            self.ApplyFormatting(start_pos, end_pos)
             self.EndRender()
 
     def SetParent(self, parent):
