@@ -41,13 +41,19 @@ class Renderer(abc.ABC):
         yield
 
     def render(self, operations):
+        for op in operations:
+            op.set_parents()
+
+        self._render(operations)
+
+    def _render(self, operations, args=None):
         for operation in operations:
             method = self.render_methods.get(operation.__class__, None)
             if method is None:
                 raise NotImplementedError("Operation {0} not supported by this renderer".format(operation.__class__.__name__))
 
             if isinstance(operation, ChildlessOperation):
-                method(operation)
+                method(operation, *args or [])
             else:
-                with method(operation):
-                    self.render(operation.children)
+                with method(operation, *args or []) as new_args:
+                    self._render(operation.children, new_args)

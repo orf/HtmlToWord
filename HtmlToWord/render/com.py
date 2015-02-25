@@ -1,6 +1,6 @@
 from . import Renderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
-    BulletList, NumberedList, ListElement, List
+    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading
 from win32com.client import constants
 
 
@@ -8,8 +8,23 @@ class COMRenderer(Renderer):
     def __init__(self, word, document, selection):
         self.word = word
         self.document = document
-        self.selection = selection
+        selection.Select()
         super().__init__()
+
+    @property
+    def selection(self):
+        return self.document.ActiveWindow.Selection
+
+    def range(self, start=None, end=None):
+        if not (start or end):
+            raise RuntimeError("Start and End are both None!")
+
+        if start is None:
+            start = end
+        elif end is None:
+            end = start
+
+        return self.document.Range(Start=start, End=end)
 
     @renders(Style)
     def style(self, op):
@@ -61,12 +76,10 @@ class COMRenderer(Renderer):
         try:
             # If the last child is a list or image then we don't want to insert a paragraph
             last_child = op.children[-1]
-            if not isinstance(last_child, (List, Image)):
+            if not isinstance(last_child, (BaseList, Image)):
                 self.selection.TypeParagraph()
         except IndexError:  # No children
-            pass
-
-        self.selection.TypeParagraph()
+            self.selection.TypeParagraph()
 
     @renders(CodeBlock)
     def pre(self, op):
@@ -85,7 +98,20 @@ class COMRenderer(Renderer):
 
     @renders(Image)
     def image(self, op):
-        image = self.selection.InlineShapes.AddPicture(FileName=op.location)
+        image = self.selection.InlineShapes.AddPicture(
+            FileName=op.location)
+
+        if op.height:
+            image.Height = op.height
+
+        if op.width:
+            image.Width = op.width
+
+        if op.caption:
+            self.selection.TypeParagraph()
+            self.selection.Range.Style = self.document.Styles("caption")
+            self.selection.TypeText(op.caption)
+
         self.selection.TypeParagraph()
 
     @renders(HyperLink)
@@ -121,10 +147,52 @@ class COMRenderer(Renderer):
 
         if first_list:
             self.selection.Range.ListFormat.RemoveNumbers(NumberType=constants.wdNumberParagraph)
+            self.selection.TypeParagraph()
         else:
             self.selection.Range.ListFormat.ListOutdent()
 
     @renders(ListElement)
     def list_element(self, op):
         yield
+        if not isinstance(op.children[0], BaseList):
+            self.selection.TypeParagraph()
+
+
+    @renders(Table)
+    def table(self, op):
+        table_range = self.selection.Range
         self.selection.TypeParagraph()
+        end_range = self.selection.Range
+
+        rows, columns = op.dimensions
+
+        table = self.selection.Tables.Add(
+            table_range,
+            NumRows=rows,
+            NumColumns=columns,
+            AutoFitBehavior=constants.wdAutoFitFixed
+        )
+        table.Style = "Table Grid"
+        table.AllowAutoFit = True
+
+        for idx, child in enumerate(op.children):
+            child._row = table.Rows(idx + 1)
+        table.Select()
+        yield
+        table.Columns.AutoFit()
+        end_range.Select()
+
+
+    @renders(TableRow)
+    def table_row(self, op):
+        row_index = op.parent.children.index(op) + 1
+        yield row_index,
+
+
+    @renders(TableCell, TableHeading)
+    def table_cell(self, op, row_index):
+        cell_index = op.parent.children.index(op) + 1
+        cell_range = self.selection.Tables(1).Rows(row_index).Cells(cell_index).Range
+        cell_range.End -= 1
+        cell_range.Select()
+        yield

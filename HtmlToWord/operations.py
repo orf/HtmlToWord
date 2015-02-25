@@ -4,27 +4,49 @@ import pprint
 class Operation(object):
     requires = set()
     optional = set()
+    allowed_children = set()
 
     def __init__(self, children=None, **kwargs):
+        self.parent = None
         self.children = children or []
         self.args = []
 
+        for k in self.optional:
+            setattr(self, k, None)
+
         for kwarg, val in kwargs.items():
-            if kwarg not in self.requires:
+            if kwarg not in self.requires and kwarg not in self.optional:
                 raise RuntimeError("Unexpected argument {0}".format(kwarg))
             setattr(self, kwarg, val)
 
+        if self.allowed_children:
+            for child in self.children:
+                if child.__class__.__name__ not in self.allowed_children:
+                    raise RuntimeError("Child {0} is not allowed!".format(child.__class__.__name__))
+
     def add_child(self, child):
+        if self.allowed_children and child.__class__.__name__ not in self.allowed_children:
+            raise RuntimeError("Child {0} is not allowed".format(child.__class__.__name__))
         self.children.append(child)
 
     def add_children(self, children):
-        self.children.extend(children)
+        for child in children:
+            self.add_child(child)
 
     def has_child(self, child_class):
         return any(isinstance(c, child_class) for c in self.children)
 
     def __repr__(self):
         return "<{0}: {1}>".format(self.__class__.__name__, self.children)
+
+    def set_parent(self, parent):
+        self.parent = parent
+
+    def set_parents(self, parent=None):
+        self.set_parent(parent)
+
+        for child in self.children:
+            child.set_parents(self)
 
 
 class ChildlessOperation(Operation):
@@ -91,23 +113,48 @@ class Font(Operation):
 
 class Image(ChildlessOperation):
     requires = {"location"}
+    optional = {"height", "width", "caption"}
 
 
 class HyperLink(Operation):
     requires = {"location"}
 
 
-class List(Operation):
+class BaseList(Operation):
+    allowed_children = {"ListElement"}
     pass
 
 
-class BulletList(List):
+class BulletList(BaseList):
     pass
 
 
-class NumberedList(List):
+class NumberedList(BaseList):
     pass
 
 
 class ListElement(Operation):
+    pass
+
+
+class Table(Operation):
+    allowed_children = {"TableRow"}
+
+    @property
+    def dimensions(self):
+        if not self.children:
+            return 0, 0
+
+        return len(self.children), len(self.children[0].children)
+
+
+class TableRow(Operation):
+    allowed_children = {"TableCell"}
+
+
+class TableCell(Operation):
+    pass
+
+
+class TableHeading(TableCell):
     pass
