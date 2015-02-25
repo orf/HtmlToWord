@@ -10,6 +10,7 @@ class Operation(object):
         self.parent = None
         self.children = children or []
         self.args = []
+        self.format = None
 
         for k in self.optional:
             setattr(self, k, None)
@@ -101,6 +102,41 @@ class CodeBlock(Operation):
 
 class LineBreak(ChildlessOperation):
     pass
+
+
+class Format(Operation):
+    optional = {
+        "style",
+        "font_size", "font_color"
+    }
+
+    @staticmethod
+    def rgbstring_to_wdcolor(value):
+        """
+        Transform a string like rgb(199,12,15) into a wdColor format used by word
+        :param value: A string like rgb(int,int,int)
+        :return: An integer representation that Word understands
+        """
+        left, right = value.find("("), value.find(")")
+        values = value[left+1:right].split(",")
+        rgblist = [v.strip() for v in values]
+        return int(rgblist[0]) + 0x100 * int(rgblist[1]) + 0x10000 * int(rgblist[2])
+
+    @staticmethod
+    def pixels_to_points(pixels):
+        """
+        Transform a pixel string into points (used by word).
+
+        :param pixels: string optionally ending in px
+        :return: an integer point representation
+        """
+        if isinstance(pixels, str):
+            if pixels.endswith("px"):
+                pixels = pixels[:-2]
+            pixels = int(pixels)
+
+        return pixels * 0.75
+
 
 
 class Style(Operation):

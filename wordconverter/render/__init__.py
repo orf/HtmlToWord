@@ -32,12 +32,8 @@ class Renderer(abc.ABC):
                 for op in method.renders_operations:
                     self.render_methods[op] = method
 
-    @renders(IgnoredOperation)
+    @renders(IgnoredOperation, Group)
     def ignored_element(self, op):
-        yield
-
-    @renders(Group)
-    def group(self, op):
         yield
 
     def render(self, operations):
@@ -52,8 +48,14 @@ class Renderer(abc.ABC):
             if method is None:
                 raise NotImplementedError("Operation {0} not supported by this renderer".format(operation.__class__.__name__))
 
-            if isinstance(operation, ChildlessOperation):
-                method(operation, *args or [])
+            if operation.format is not None and operation.format.__class__ in self.render_methods:
+                format_func = self.render_methods[operation.format.__class__]
             else:
-                with method(operation, *args or []) as new_args:
-                    self._render(operation.children, new_args)
+                format_func = self.ignored_element
+
+            with format_func(operation.format):
+                if isinstance(operation, ChildlessOperation):
+                    method(operation, *args or [])
+                else:
+                    with method(operation, *args or []) as new_args:
+                        self._render(operation.children, new_args)

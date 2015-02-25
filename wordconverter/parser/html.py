@@ -1,7 +1,7 @@
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHeading
+    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHeading, Format
 import bs4
 from functools import partial
 import cssutils
@@ -59,8 +59,8 @@ class HTMLParser(BaseParser):
                 continue
 
             tokens.append(item)
-        import pprint
-        pprint.pprint(tokens)
+        #import pprint
+        #pprint.pprint(tokens)
         return tokens
 
     def build_element(self, element, whitespace="ignore"):
@@ -111,5 +111,22 @@ class HTMLParser(BaseParser):
                 instance.add_children(item.children)
             else:
                 instance.add_child(item)
+
+        args = {}
+
+        for attribute, value in element.attrs.items():
+            if attribute == "class" and value:
+                # ToDo: Handle multiple classes? Idk.
+                args["style"] = value[0]
+            elif attribute == "style":
+                styles = cssutils.parseStyle(value)
+                for style in styles:
+                    if style.name == "font-size":
+                        args["font_size"] = Format.pixels_to_points(style.value)
+                    elif style.name == "color":
+                        args["font_color"] = Format.rgbstring_to_wdcolor(style.value)
+
+        if args:
+            instance.format = Format(**args)
 
         return instance

@@ -1,7 +1,9 @@
 from . import Renderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
-    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading
+    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading, Format
 from win32com.client import constants
+from pywintypes import com_error
+import warnings
 
 
 class COMRenderer(Renderer):
@@ -157,7 +159,6 @@ class COMRenderer(Renderer):
         if not isinstance(op.children[0], BaseList):
             self.selection.TypeParagraph()
 
-
     @renders(Table)
     def table(self, op):
         table_range = self.selection.Range
@@ -182,12 +183,10 @@ class COMRenderer(Renderer):
         table.Columns.AutoFit()
         end_range.Select()
 
-
     @renders(TableRow)
     def table_row(self, op):
         row_index = op.parent.children.index(op) + 1
         yield row_index,
-
 
     @renders(TableCell, TableHeading)
     def table_cell(self, op, row_index):
@@ -196,3 +195,23 @@ class COMRenderer(Renderer):
         cell_range.End -= 1
         cell_range.Select()
         yield
+
+    @renders(Format)
+    def format(self, op):
+        start = self.selection.Start
+        yield
+        end = self.selection.End
+
+        element_range = self.range(start, end)
+
+        if op.style:
+            try:
+                element_range.Style = op.style
+            except com_error:
+                warnings.warn("Unable to apply style name {0}".format(op.style))
+
+        if op.font_size:
+            element_range.Font.Size = op.font_size
+
+        if op.font_color:
+            element_range.Font.Color = op.font_color

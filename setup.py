@@ -1,11 +1,12 @@
-from distutils.core import setup
+from setuptools import setup,find_packages
 
 setup(
-    name='word',
+    name='wordconverter',
     version='0.5',
-    packages=['word'],
+    packages=find_packages(),
     url='https://github.com/orf/HtmlToWord',
     license='',
+
     author='Tom',
     author_email='tom@tomforb.es',
     description='Render HTML to a specific portion of a word document',

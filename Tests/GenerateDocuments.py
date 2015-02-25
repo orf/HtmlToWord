@@ -1,5 +1,6 @@
-from HtmlToWord.parser.html import HTMLParser
-from HtmlToWord.render.com import COMRenderer
+from wordconverter.parser.html import HTMLParser
+from wordconverter.parser.markdown import MarkdownParser
+from wordconverter.render.com import COMRenderer
 import win32com.client
 import os
 import sys
@@ -10,15 +11,19 @@ if not os.path.exists("saved_documents"):
 
 word = win32com.client.gencache.EnsureDispatch("Word.Application")
 word.Visible = True
-parser = HTMLParser()
 
 try:
     paths = (sys.argv[1],)
 except IndexError:
-    paths = (path for path in os.listdir("html") if path.endswith(".html"))
+    paths = (path for path in os.listdir("docs") if path.endswith(".html") or path.endswith(".md"))
 
 for file_name in paths:
     print("Parsing: %s" % file_name)
+
+    if file_name.endswith(".html"):
+        parser = HTMLParser()
+    else:
+        parser = MarkdownParser()
 
     document = word.Documents.Add()
 
