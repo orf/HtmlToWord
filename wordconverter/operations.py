@@ -100,6 +100,10 @@ class CodeBlock(Operation):
     pass
 
 
+class InlineCode(Operation):
+    pass
+
+
 class LineBreak(ChildlessOperation):
     pass
 
@@ -154,6 +158,7 @@ class Image(ChildlessOperation):
 
 class HyperLink(Operation):
     requires = {"location"}
+    optional = {"label"}
 
 
 class BaseList(Operation):

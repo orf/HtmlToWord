@@ -4,7 +4,7 @@ from wordconverter.render.com import COMRenderer
 import win32com.client
 import os
 import sys
-import pprint
+import time
 
 if not os.path.exists("saved_documents"):
     os.mkdir("saved_documents")
@@ -29,12 +29,17 @@ for file_name in paths:
 
     renderer = COMRenderer(word, document, document.ActiveWindow.Selection)
 
-    with open(os.path.join("html", file_name), "r") as fd:
+    with open(os.path.join("docs", file_name), "r") as fd:
         Html = fd.read()
 
-    renderer.render(parser.parse(Html))
+    start = time.time()
+    p = parser.parse(Html)
+    print(time.time() - start)
+    render_start = time.time()
+    renderer.render(p)
+    print(time.time() - render_start)
 
     path = os.path.abspath(os.path.join("saved_documents", file_name + ".docx"))
 
     document.SaveAs(path)
-    #document.Close()
+    document.Close()
