@@ -1,6 +1,6 @@
 from . import Renderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
-    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading, Format
+    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading, Format, InlineCode
 from win32com.client import constants
 from pywintypes import com_error
 import warnings
@@ -78,18 +78,34 @@ class COMRenderer(Renderer):
         if previous_style is not None:
             self.selection.Style = previous_style
 
-        try:
-            # If the last child is a list or image then we don't want to insert a paragraph
-            last_child = op.children[-1]
-            if not isinstance(last_child, (BaseList, Image)):
-                self.selection.TypeParagraph()
-        except IndexError:  # No children
+        should_do_newline = True
+
+        if op.children and isinstance(op.children[-1], (BaseList, Image, Table)):
+            should_do_newline = False
+
+        if isinstance(op.parent, ListElement):
+            should_do_newline = False
+
+        if should_do_newline:
             self.selection.TypeParagraph()
 
-    @renders(CodeBlock)
-    def pre(self, op):
+    @renders(InlineCode)
+    def inline_code(self, op):
         previous_style = self.selection.Style
-        previous_font = self.selection.Font.Name
+        previous_font_name, previous_font_size = self.selection.Font.Name, self.selection.Font.Size
+        self.selection.Font.Name = "Courier New"
+        self.selection.Font.Size = 7
+
+        yield
+
+        self.selection.Style = previous_style
+        self.selection.Font.Name = previous_font_name
+        self.selection.Font.Size = previous_font_size
+
+    @renders(CodeBlock)
+    def code_block(self, op):
+        previous_style = self.selection.Style
+        previous_font_name, previous_font_size = self.selection.Font.Name, self.selection.Font.Size
         self.selection.Style = self.document.Styles("No Spacing")
         self.selection.Font.Name = "Courier New"
         self.selection.Font.Size = 7
@@ -99,7 +115,8 @@ class COMRenderer(Renderer):
         self.selection.ParagraphFormat.LineSpacingRule = constants.wdLineSpace1pt5
         self.selection.TypeParagraph()
         self.selection.Style = previous_style
-        self.selection.Font.Name = previous_font
+        self.selection.Font.Name = previous_font_name
+        self.selection.Font.Size = previous_font_size
 
     @renders(Image)
     def image(self, op):

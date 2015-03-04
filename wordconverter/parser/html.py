@@ -15,7 +15,12 @@ class HTMLParser(BaseParser):
         }
         # Strip whitespace but keep spaces between tags
         self.respect_whitespace = {
-            Paragraph, Bold, Italic, UnderLine
+            Paragraph, Bold, Italic, UnderLine, TableCell, Style, HyperLink
+        }
+
+        # Ignore all whitespace
+        self.ignore_whitespace = {
+            Table, TableRow, NumberedList, BulletList, ListElement
         }
 
         self.mapping = {
@@ -78,7 +83,7 @@ class HTMLParser(BaseParser):
                         return None
                     return Text(text=" ")
 
-            return Text(text=str(element.strip()))
+            return Text(text=str(element).strip())
 
         cls = self.mapping.get(element.name, IgnoredOperation)
 
@@ -89,7 +94,10 @@ class HTMLParser(BaseParser):
                           caption=element.attrs.get("alt", None),
                           location=element.attrs["src"])
         elif cls is HyperLink:
-            cls = partial(HyperLink, location=element.attrs["href"])
+            if "href" not in element.attrs:
+                cls = IgnoredOperation
+            else:
+                cls = partial(HyperLink, location=element.attrs["href"])
 
         instance = cls()
 
@@ -97,6 +105,8 @@ class HTMLParser(BaseParser):
             whitespace = "respect"
         elif cls in self.preserve_whitespace:
             whitespace = "preserve"
+        elif cls in self.ignore_whitespace:
+            whitespace = "ignore"
 
         for child in element.childGenerator():
             item = self.build_element(child, whitespace=whitespace)
@@ -128,5 +138,17 @@ class HTMLParser(BaseParser):
 
         if args:
             instance.format = Format(**args)
+
+        if cls in (Paragraph,):
+            # Respect it but trim it on the ends
+            while instance.children and \
+                    (isinstance(instance.children[0], Text) or isinstance(instance.children[-1], Text)):
+                first, last = instance.children[0], instance.children[-1]
+                if hasattr(first, "text") and first.text.isspace():
+                    instance.children.remove(first)
+                elif hasattr(last, "text") and last.text.isspace():
+                    instance.children.remove(last)
+                else:
+                    break
 
         return instance
