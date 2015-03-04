@@ -1,9 +1,14 @@
 from . import Renderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
     BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading, Format, InlineCode
-from win32com.client import constants
 from pywintypes import com_error
 import warnings
+
+try:
+    from win32com.client import constants
+    constants.wdCollapseEnd
+except AttributeError:
+    from comtypes.gen import Word as constants
 
 
 class COMRenderer(Renderer):
