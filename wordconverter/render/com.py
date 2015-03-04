@@ -7,10 +7,13 @@ import warnings
 
 
 class COMRenderer(Renderer):
-    def __init__(self, word, document, selection):
+    def __init__(self, word, document, selection=None):
         self.word = word
         self.document = document
-        selection.Select()
+
+        if selection is not None:
+            selection.Select()
+
         super().__init__()
 
     @property

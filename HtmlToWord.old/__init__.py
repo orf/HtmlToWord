@@ -1,1 +1,0 @@
-from HtmlToWord.parser import Parser

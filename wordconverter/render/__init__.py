@@ -59,3 +59,6 @@ class Renderer(abc.ABC):
                 else:
                     with method(operation, *args or []) as new_args:
                         self._render(operation.children, new_args)
+
+
+from .com import COMRenderer
