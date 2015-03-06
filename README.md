@@ -46,10 +46,10 @@ are using Wordinserter requires you to pass the right one in explicitly.
 
 
 ### Install
-Get it [from PyPi here](https://pypi.python.org/pypi/wordconverter). This has been built with word 2010 and 2013, older 
+Get it [from PyPi here](https://pypi.python.org/pypi/wordinserter). This has been built with word 2010 and 2013, older 
 versions may produce different results.
 
 
 ## Supported Operations
-WordConverter currently supports a range of different operations, including code blocks, font size/colors, images, 
+WordInserter currently supports a range of different operations, including code blocks, font size/colors, images, 
 hyperlinks, numbered and bullet lists (
