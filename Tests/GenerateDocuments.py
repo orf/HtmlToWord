@@ -1,7 +1,5 @@
-from wordconverter.parser.html import HTMLParser
-from wordconverter.parser.markdown import MarkdownParser
-from wordconverter.render.com import COMRenderer
-import win32com.client
+from wordinserter import insert, parse
+from comtypes.client import CreateObject
 import os
 import sys
 import time
@@ -9,8 +7,10 @@ import time
 if not os.path.exists("saved_documents"):
     os.mkdir("saved_documents")
 
-word = win32com.client.gencache.EnsureDispatch("Word.Application")
+word = CreateObject("Word.Application")
 word.Visible = True
+
+from comtypes.gen import Word as constants
 
 try:
     paths = (sys.argv[1],)
@@ -20,26 +20,23 @@ except IndexError:
 for file_name in paths:
     print("Parsing: %s" % file_name)
 
-    if file_name.endswith(".html"):
-        parser = HTMLParser()
-    else:
-        parser = MarkdownParser()
-
     document = word.Documents.Add()
 
-    renderer = COMRenderer(word, document, document.ActiveWindow.Selection)
-
     with open(os.path.join("docs", file_name), "r") as fd:
-        Html = fd.read()
+        text = fd.read()
 
     start = time.time()
-    p = parser.parse(Html)
+    operations = parse(text, "html" if file_name.endswith(".html") else "markdown")
     print(time.time() - start)
+
     render_start = time.time()
-    renderer.render(p)
+
+    insert(operations, document=document, constants=constants)
     print(time.time() - render_start)
+
+
 
     path = os.path.abspath(os.path.join("saved_documents", file_name + ".docx"))
 
-    document.SaveAs(path)
-    document.Close()
+    #document.SaveAs(path)
+    #document.Close()

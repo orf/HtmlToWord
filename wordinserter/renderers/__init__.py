@@ -3,6 +3,7 @@ import functools
 import inspect
 import contextlib
 from ..operations import ChildlessOperation, IgnoredOperation, Group
+import sys
 
 
 def renders(*operations):
@@ -24,8 +25,9 @@ def renders(*operations):
     return _wrapper
 
 
-class Renderer(abc.ABC):
-    def __init__(self):
+class BaseRenderer(abc.ABC):
+    def __init__(self, debug=False):
+        self.debug = debug
         self.render_methods = {}
         for name, method in inspect.getmembers(self, inspect.ismethod):
             if hasattr(method, "renders_operations"):
@@ -42,7 +44,7 @@ class Renderer(abc.ABC):
 
         self._render(operations)
 
-    def _render(self, operations, args=None):
+    def _render(self, operations, args=None, indent=0):
         for operation in operations:
             method = self.render_methods.get(operation.__class__, None)
             if method is None:
@@ -55,10 +57,42 @@ class Renderer(abc.ABC):
 
             with format_func(operation.format):
                 if isinstance(operation, ChildlessOperation):
+
+                    if self.debug:
+                        print((" " * indent) + operation.__class__.__name__)
+
                     method(operation, *args or [])
+
                 else:
+                    if self.debug:
+                        method = debug_method(method, indent)
+
                     with method(operation, *args or []) as new_args:
-                        self._render(operation.children, new_args)
+                        self._render(operation.children, new_args, indent+1)
+
+
+import contextlib
+
+
+class debug_method(object):
+    def __init__(self, method, indent):
+        self.method = method
+        self.indent = indent
+        self.operation = None
+
+    def __call__(self, operation, *args):
+        self.operation = operation
+        self.inner_manager = self.method(operation, *args)
+        return self
+
+    def __enter__(self):
+        print((" " * self.indent) + self.operation.__class__.__name__)
+        return self.inner_manager.__enter__()
+
+    def __exit__(self, *args):
+        print((" " * self.indent) + "/" + self.operation.__class__.__name__)
+        return self.inner_manager.__exit__(*args)
+
 
 
 from .com import COMRenderer

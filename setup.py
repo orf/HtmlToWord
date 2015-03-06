@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='wordconverter',
+    name='wordinserter',
     version='0.5',
-    packages=["wordconverter"],
+    packages=find_packages(),
     url='https://github.com/orf/HtmlToWord',
     license='',
 

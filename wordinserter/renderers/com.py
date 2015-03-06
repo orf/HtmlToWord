@@ -1,25 +1,19 @@
-from . import Renderer, renders
+from . import BaseRenderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
     BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading, Format, InlineCode
-from pywintypes import com_error
 import warnings
 
-try:
-    from win32com.client import constants
-    constants.wdCollapseEnd
-except AttributeError:
-    from comtypes.gen import Word as constants
 
-
-class COMRenderer(Renderer):
-    def __init__(self, word, document, selection=None):
-        self.word = word
+class COMRenderer(BaseRenderer):
+    def __init__(self, document, constants, range=None, debug=False):
+        self.word = document.Application
         self.document = document
+        self.constants = constants
 
-        if selection is not None:
-            selection.Select()
+        if range is not None:
+            range.Select()
 
-        super().__init__()
+        super().__init__(debug)
 
     @property
     def selection(self):
@@ -59,9 +53,9 @@ class COMRenderer(Renderer):
 
     @renders(UnderLine)
     def underline(self, op):
-        self.selection.Font.Underline = constants.wdUnderlineSingle
+        self.selection.Font.Underline = self.constants.wdUnderlineSingle
         yield
-        self.selection.Font.Underline = constants.wdUnderlineNone
+        self.selection.Font.Underline = self.constants.wdUnderlineNone
 
     @renders(Text)
     def text(self, op):
@@ -88,7 +82,9 @@ class COMRenderer(Renderer):
         if op.children and isinstance(op.children[-1], (BaseList, Image, Table)):
             should_do_newline = False
 
-        if isinstance(op.parent, ListElement):
+        if isinstance(op.parent, ListElement) and op.parent.children[-1] is op:
+            # If our parent is a ListElement and our operation is the last one of it's children then we don't need to
+            # add a newline.
             should_do_newline = False
 
         if should_do_newline:
@@ -117,7 +113,7 @@ class COMRenderer(Renderer):
 
         yield
 
-        self.selection.ParagraphFormat.LineSpacingRule = constants.wdLineSpace1pt5
+        self.selection.ParagraphFormat.LineSpacingRule = self.constants.wdLineSpace1pt5
         self.selection.TypeParagraph()
         self.selection.Style = previous_style
         self.selection.Font.Name = previous_font_name
@@ -152,7 +148,7 @@ class COMRenderer(Renderer):
         style = self.selection.Style
         rng = self.document.Range(Start=start_range, End=self.selection.Range.End)
         self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
-        self.selection.Collapse(Direction=constants.wdCollapseEnd)
+        self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
         self.selection.Style = style
 
     @renders(BulletList, NumberedList)
@@ -162,10 +158,10 @@ class COMRenderer(Renderer):
         if first_list:
             self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
                 ListTemplate=self.word.ListGalleries(
-                    constants.wdNumberGallery if isinstance(op, NumberedList) else constants.wdBulletGallery
+                    self.constants.wdNumberGallery if isinstance(op, NumberedList) else self.constants.wdBulletGallery
                 ).ListTemplates(1),
                 ContinuePreviousList=False,
-                DefaultListBehavior=constants.wdWord10ListBehavior
+                DefaultListBehavior=self.constants.wdWord10ListBehavior
             )
         else:
             self.selection.Range.ListFormat.ListIndent()
@@ -173,15 +169,15 @@ class COMRenderer(Renderer):
         yield
 
         if first_list:
-            self.selection.Range.ListFormat.RemoveNumbers(NumberType=constants.wdNumberParagraph)
-            self.selection.TypeParagraph()
+            self.selection.Range.ListFormat.RemoveNumbers(NumberType=self.constants.wdNumberParagraph)
+            #self.selection.TypeParagraph()
         else:
             self.selection.Range.ListFormat.ListOutdent()
 
     @renders(ListElement)
     def list_element(self, op):
         yield
-        if not isinstance(op.children[0], BaseList):
+        if not isinstance(op.children[-1], BaseList):
             self.selection.TypeParagraph()
 
     @renders(Table)
@@ -196,7 +192,7 @@ class COMRenderer(Renderer):
             table_range,
             NumRows=rows,
             NumColumns=columns,
-            AutoFitBehavior=constants.wdAutoFitFixed
+            AutoFitBehavior=self.constants.wdAutoFitFixed
         )
         table.Style = "Table Grid"
         table.AllowAutoFit = True
@@ -232,7 +228,7 @@ class COMRenderer(Renderer):
         if op.style:
             try:
                 element_range.Style = op.style
-            except com_error:
+            except Exception:
                 warnings.warn("Unable to apply style name {0}".format(op.style))
 
         if op.font_size:

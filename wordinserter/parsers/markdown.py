@@ -41,7 +41,7 @@ class MarkdownParser(BaseParser):
             obj = Paragraph()
         elif node.t == "Str":
             obj = Text(text=node.c)
-        elif node.t == "Softbreak":
+        elif node.t in ("Softbreak", "Hardbreak"):
             obj = Text(text=" ")
         elif node.t == "Emph":
             obj = Italic()

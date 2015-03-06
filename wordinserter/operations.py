@@ -142,7 +142,6 @@ class Format(Operation):
         return pixels * 0.75
 
 
-
 class Style(Operation):
     requires = {"name"}
 
