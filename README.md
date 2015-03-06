@@ -3,10 +3,12 @@ WordInserter
 This module allows you to insert HTML or MarkDown into a Word Document, as well as allowing you to programmatically build 
 word documents in pure Python. The API is really simple to use:
 
-    from wordinserter import parse, render
-    
-    operations = parse(html, parser="html") # or parser="markdown"
-    insert(operations, document=document, constants=constants)
+``` python
+from wordinserter import parse, render
+
+operations = parse(html, parser="html") # or parser="markdown"
+insert(operations, document=document, constants=constants)
+```
     
 Inserting HTML or Markdown into a Word document is a two step process: first the input has to be parsed into a sequence 
 of operations, which is then *rendered* into a Word document. This library currently only supports inserting using the 
@@ -16,27 +18,27 @@ Below is a more complex example including starting word that will insert a repre
 into the new word document, including the image, caption and list.
 
 ``` python
-    from wordinserter import render, parse
-    from comtypes.client import CreateObject
+from wordinserter import render, parse
+from comtypes.client import CreateObject
 
-    # This opens Microsoft Word and creates a new document.
-    word = CreateObject("Word.Application")
-    word.Visible = True # Don't set this to True in production!
-    document = word.Documents.Add()
-    from comtypes.gen import Word as constants
-    
-    html = """
-    <h3>This is a title</h3>
-    <p><img src="http://placehold.it/150x150" alt="I go below the image as a caption"></p>
-    <p><i>This is <b>some</b> text</i> in a <a href="http://google.com">paragraph</a></p>
-    <ul>
-        <li>Boo! I am a <b>list</b></li>
-    </ul>
-    """
-    
-    # Parse the HTML into a list of operations then feed them into render.
-    operations = parse(html, parser="html")
-    render(operations, document=document, constants=constants)
+# This opens Microsoft Word and creates a new document.
+word = CreateObject("Word.Application")
+word.Visible = True # Don't set this to True in production!
+document = word.Documents.Add()
+from comtypes.gen import Word as constants
+
+html = """
+<h3>This is a title</h3>
+<p><img src="http://placehold.it/150x150" alt="I go below the image as a caption"></p>
+<p><i>This is <b>some</b> text</i> in a <a href="http://google.com">paragraph</a></p>
+<ul>
+    <li>Boo! I am a <b>list</b></li>
+</ul>
+"""
+
+# Parse the HTML into a list of operations then feed them into render.
+operations = parse(html, parser="html")
+render(operations, document=document, constants=constants)
 ```
 
 What's with the constants part? Wordinserter is agnostic to the COM library you use. Each library exposes constant 
