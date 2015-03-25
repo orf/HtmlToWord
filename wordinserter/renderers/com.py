@@ -177,7 +177,7 @@ class COMRenderer(BaseRenderer):
     @renders(ListElement)
     def list_element(self, op):
         yield
-        if not isinstance(op.children[-1], BaseList):
+        if op.children and not isinstance(op.children[-1], BaseList):
             self.selection.TypeParagraph()
 
     @renders(Table)
