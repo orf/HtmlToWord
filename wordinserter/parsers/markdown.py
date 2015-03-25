@@ -50,6 +50,8 @@ class MarkdownParser(BaseParser):
         elif node.t == "Image":
             caption = node.label[0].c if len(node.label) else ""
             obj = Image(location=node.destination, caption=caption)
+        elif node.t == "Html":
+            obj = Text(text=node.c)
         elif node.t == "HtmlBlock":
             # Special case. Parse the HTML into instructions
             instructions = self.html_parser.parse(node.string_content)

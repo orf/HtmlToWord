@@ -1,4 +1,5 @@
 import pprint
+from collections import Iterable
 
 
 class Operation(object):
