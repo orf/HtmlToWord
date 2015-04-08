@@ -208,15 +208,14 @@ class BaseElement(object):
         return True
 
     def _EndRender(self):
-        if hasattr(self, 'Cell'):
-            start_pos = self.Cell.Range.Start
-            end_pos = self.Cell.Range.End
-        else:
-            start_pos = self.start_pos
-            end_pos = self.document.ActiveWindow.Selection.End
-
         if self.__shouldCallEndRender:
-            end_pos = self.document.ActiveWindow.Selection.End
+            if hasattr(self, 'Cell'):
+                start_pos = self.Cell.Range.Start
+                end_pos = self.Cell.Range.End
+            else:
+                start_pos = self.start_pos
+                end_pos = self.document.ActiveWindow.Selection.End
+
             self.ApplyFormatting(start_pos, end_pos)
             self.EndRender()
 
