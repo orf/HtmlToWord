@@ -35,6 +35,7 @@ class BaseElement(object):
     AllowedChildren = []
     IgnoredChildren = []
     IsIgnored = False
+    soup = None
 
     # StripTextAfter is used by elements that contain text, such as paragraphs. Text objects after will be stripped
     # of any whitespace
