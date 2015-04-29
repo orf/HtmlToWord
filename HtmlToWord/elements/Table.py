@@ -65,6 +65,13 @@ class Table(BaseElement):
         self.Table.Style = "Table Grid"
         self.Table.AllowAutoFit = True
 
+    def ApplyFormatting(self, start_pos, end_pos):
+        super(Table, self).ApplyFormatting(start_pos, end_pos)
+        if 'border' in self.attrs:
+            border = self.attrs['border']
+            if border == '0':
+                self.Table.Borders.Enable = 0
+
     def EndRender(self):
         self.Table.Columns.AutoFit()
         self._MergeCells()
