@@ -44,6 +44,8 @@ ElementMappings = {
     "wbr": IgnoredElement
 }
 
+IncludeBSParseResult = ('table',)
+
 
 class Parser(object):
     def __init__(self, ElementMap=None, Word=None):
@@ -92,6 +94,8 @@ class Parser(object):
             return Text(element)
 
         ElementInstance = self.ElementMappings.get(element.name, IgnoredElement)()
+        if element.name in IncludeBSParseResult:
+            ElementInstance.soup = element
 
         if isinstance(ElementInstance, IgnoredElement):
             warnings.warn("Element %s is ignored" % element.name)
