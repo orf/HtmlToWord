@@ -128,6 +128,8 @@ class BaseElement(object):
         return None, None
 
     def ApplyFormatting(self, start_pos, end_pos):
+        if start_pos >= end_pos:
+            return None
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
             try:
