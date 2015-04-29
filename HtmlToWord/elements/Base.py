@@ -3,33 +3,7 @@ from collections import defaultdict
 import warnings
 
 
-def getWdColorFromRGB(rgbAttr):
-    """
-    receive an rgb color attribute string like 'rgb(149, 55, 52)' and tranform it to a numeric constant
-    in order to use it as a Selection.Font.Color attribute (as an item of WdColor enumeration)
-    """
-    try:
-        values = rgbAttr[rgbAttr.find('(')+1:rgbAttr.find(')')].split(',')
-    except:
-        warnings.warn("getWdColorFromRGB: not possible to parse the RGB string '%s' " % rgbAttr)
-        return None
-    else:
-        rgbstrlst = [v.strip() for v in values]
-        return (int(rgbstrlst[0]) + 0x100 * int(rgbstrlst[1]) + 0x10000 * int(rgbstrlst[2]))
-
-
-def getPointsFromPx(px_str):
-    """
-    receive an string representing the font-size attribute value in px (e.g. '16px') and tranform it
-    to the equivalent value in points
-    """
-    try:
-        px = px_str.split('px')[0]
-        return int(px)*0.75
-    except ValueError, IndexError:
-        warnings.warn("Unable to tranform the value '%s' points" % px_str)
-        return None
-
+from HtmlToWord.elements.styles import getWdColorFromStyle, getPointsFromPx, getWdColorIndexFromMapping
 
 class BaseElement(object):
     AllowedChildren = []
@@ -144,9 +118,13 @@ class BaseElement(object):
                             if fontsize:
                                 rng.Font.Size = fontsize
                         elif style=="color":
-                            color = getWdColorFromRGB(val)
+                            color = getWdColorFromStyle(val)
                             if color:
                                 rng.Font.Color = color
+                        elif style=="background-color":
+                            color = getWdColorIndexFromMapping(val)
+                            if color:
+                                rng.HighlightColorIndex = color
                         else:
                             warnings.warn("Unable to process the style '%s' with value '%s'" % (style, val))
             except Exception as e:
@@ -205,8 +183,13 @@ class BaseElement(object):
                 o = o.GetChildren()[0]
 
         self.start_pos = self.document.ActiveWindow.Selection.Start
+        self.FlushPreviousFormatting()
         self.StartRender()
         return True
+
+    def FlushPreviousFormatting(self):
+        rng = self.document.Range(self.start_pos, self.start_pos+1)
+        rng.HighlightColorIndex = 0
 
     def _EndRender(self):
         if self.__shouldCallEndRender:
