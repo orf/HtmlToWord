@@ -17,7 +17,6 @@ class Table(BaseElement):
         super(Table, self).__init__(*args, **kwargs)
         self.TableRow = 0
         self.HasHeader = False
-        self.mapper = None
 
     def _MergeCells(self):
         """
@@ -88,14 +87,14 @@ class TableMapper(object):
 
         # Calculating offsets
         for row_index, row in reversed(list(enumerate(tablerows, start=1))):
-            cells = row.findAll('td')
+            cells = row.findAll(('td', 'th'))
             for cell_index, cell in reversed(list(enumerate(cells, start=1))):
                 mapping[(row_index, cell_index)] = (row_index, cell_index)
 
                 rowspan = int(cell.get('rowspan', 1))
                 colspan = int(cell.get('colspan', 1))
-                #adjusts rowspan
-                if rowspan != 1:
+
+                if rowspan != 1:  # Adjust rowspan
                     def is_affected_by_rowspan(position):
                         row, column = position
                         return (row_index < row < (row_index + rowspan)) and (cell_index <= column)
@@ -104,8 +103,7 @@ class TableMapper(object):
                         row, column = mapping[key]
                         mapping[key] = row, column + colspan
 
-                if colspan != 1:
-                # adjusts colspan
+                if colspan != 1:  # Adjust colspan
                     def is_affected_by_colspan(position):
                         row, column = position
                         return row == row_index and cell_index < column
@@ -121,7 +119,7 @@ class TableMapper(object):
         # Calculating cells to merge
         cells_to_merge = []
         for row_index, row in enumerate(tablerows, start=1):
-            cells = row.findAll('td')
+            cells = row.findAll(('td', 'th'))
             for cell_index, cell in enumerate(cells, start=1):
                 new_row_index, new_column_index = mapping[(row_index, cell_index)]
 
@@ -137,34 +135,29 @@ class TableMapper(object):
         self.mapping = mapping
         self.cells_to_merge = cells_to_merge
 
+
 class TableBody(IgnoredElement):
     pass
 
 
-class TableHead(BaseElement):
-    def SetRow(self, Row):
-        self.GetChildren()[0].SetRow(Row, 1)
+class TableHead(IgnoredElement):
+    pass
 
 
 class TableRow(BaseElement):
     AllowedChildren = ["TableCell"]
-
-    def __init__(self, *args, **kwargs):
-        super(TableRow, self).__init__(*args, **kwargs)
-        self.Row = None
-        self.IsHeader = False
 
     def SetRow(self, Row, row_number):
         self.Row = Row
         self.row_number = row_number
 
     def StartRender(self):
-        self.IsHeader = self.GetParent().GetName == "TableHead"
-        mapper = self.GetParent().mapper
+        parent = self.GetParent()
+        mapping = parent.mapper.mapping
         for count, child in enumerate(self.GetChildren()):
             assert child.GetName() == "TableCell", "Child of TableRow is not TableCell! Its %s" % child.GetName()
-            new_mapping = mapper.mapping[(self.row_number, count+1)]
-            child.SetCell(self.Row.Cells(new_mapping[1]))
+            new_row, new_column = mapping[(self.row_number, count+1)]
+            child.SetCell(self.Row.Cells(new_column))
 
 
 class TableCell(BaseElement):
