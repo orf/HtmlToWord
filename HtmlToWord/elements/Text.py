@@ -4,7 +4,7 @@ from win32com.client import constants
 import re
 
 
-class Bold(BaseElement):
+class Bold(InlineElement):
     def StartRender(self):
         self.selection.BoldRun()
 
@@ -12,7 +12,7 @@ class Bold(BaseElement):
         self.selection.BoldRun()
 
 
-class Italic(BaseElement):
+class Italic(InlineElement):
     def StartRender(self):
         self.selection.ItalicRun()
 
@@ -20,7 +20,7 @@ class Italic(BaseElement):
         self.selection.ItalicRun()
 
 
-class UnderLine(BaseElement):
+class UnderLine(InlineElement):
     def StartRender(self):
         with self.With(self.selection.Font) as Font:
             Font.UnderlineColor = constants.wdColorAutomatic
@@ -79,7 +79,7 @@ class Text(ChildlessElement):
         return "<Text: %s>" % repr(self.Text)
 
 
-class Paragraph(BaseElement):
+class Paragraph(BlockElement):
     StripTextAfter = True
 
     def StartRender(self):
@@ -90,13 +90,9 @@ class Paragraph(BaseElement):
     def EndRender(self):
         if self.HasChild("Break"):
             self.selection.Style = self.PreviousStyle
-        # Adding a paragprah after this looks weird as the list does this itself.
-        from HtmlToWord.elements.Misc import Image
-        if not isinstance(self.GetLastChild(), (List, Image)) and self.GetParent().GetLastChild() != self:
-            self.selection.TypeParagraph()
 
 
-class Pre(BaseElement):
+class Pre(BlockElement):
     StripFirstElementText = True
     PRE_FORMATTED = True
 

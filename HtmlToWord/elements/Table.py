@@ -4,7 +4,7 @@ from HtmlToWord.elements.Base import *
 from win32com.client import constants
 
 
-class Table(BaseElement):
+class Table(BlockElement):
     """
     I seem to support merged cells and rows now, but in their infinite complexity I am
     sure someone will find ways to break me. I support two types of table:

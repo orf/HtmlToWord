@@ -10,6 +10,7 @@ class BaseElement(object):
     IgnoredChildren = []
     IsIgnored = False
     soup = None
+    blockDisplay = None
 
     # StripTextAfter is used by elements that contain text, such as paragraphs. Text objects after will be stripped
     # of any whitespace
@@ -184,6 +185,7 @@ class BaseElement(object):
 
                 o = o.GetChildren()[0]
 
+        self.addLineBreak()
         self.start_pos = self.document.ActiveWindow.Selection.Start
         self.FlushPreviousFormatting()
         self.StartRender()
@@ -204,6 +206,11 @@ class BaseElement(object):
 
             self.ApplyFormatting(start_pos, end_pos)
             self.EndRender()
+
+    def addLineBreak(self):
+        isParaStart = self.selection.Start == self.selection.Paragraphs(1).Range.Start
+        if self.blockDisplay and not isParaStart:
+            self.selection.TypeParagraph()
 
     def SetParent(self, parent):
         self.parent = parent
@@ -237,6 +244,11 @@ class BaseElement(object):
         self._EndRender()
         return False
 
+class BlockElement(BaseElement):
+    blockDisplay = True
+
+class InlineElement(BaseElement):
+    blockDisplay = False
 
 class IgnoredElement(BaseElement):
     IsIgnored = True

@@ -1,14 +1,11 @@
 from HtmlToWord.elements.Base import *
 
 
-class BaseHeading(BaseElement):
+class BaseHeading(BlockElement):
     StyleName = None
 
     def StartRender(self):
         self.selection.Style = self.GetDocument().Styles(self.StyleName)
-
-    def EndRender(self):
-        self.selection.TypeParagraph()
 
 
 class Heading1(BaseHeading):
