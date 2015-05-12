@@ -2,7 +2,7 @@ from HtmlToWord.elements.Base import *
 from win32com.client import constants
 
 
-class List(BaseElement):
+class List(BlockElement):
     """
     I am a list, I can be ordered or unordered and I can have sub lists within me.
     There are two common ways to express sub lists using HTML and this class handles both of them:

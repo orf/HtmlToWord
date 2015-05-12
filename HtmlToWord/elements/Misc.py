@@ -18,11 +18,11 @@ class Break(ChildlessElement):
         self.selection.TypeParagraph()
 
 
-class Div(BaseElement):
+class Div(BlockElement):
     pass
 
 
-class Span(BaseElement):
+class Span(InlineElement):
     pass
 
 
@@ -61,7 +61,7 @@ class Image(ChildlessElement):
             self.selection.TypeParagraph()
 
 
-class HyperLink(BaseElement):
+class HyperLink(InlineElement):
     # Formatting tags don't work well inside hyperlinks. Ignore them.
     IgnoredChildren = groups.FORMAT_TAGS
 
