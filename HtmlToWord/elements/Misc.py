@@ -1,3 +1,8 @@
+import os
+import tempfile
+import urllib2
+import warnings
+
 from HtmlToWord.elements.Base import *
 from win32com.client import constants
 from HtmlToWord import groups
@@ -32,18 +37,19 @@ class Image(ChildlessElement):
         caption = self.GetAttrs()["alt"]
         height = self.GetAttrs()["height"]
         width = self.GetAttrs()["width"]
-        if url[:5] == 'https':
+        if url.startswith('https'):
             # workaround to fetch images from https urls: in some cases MS Word is not able to correctly
             # fetch remote files over HTTPS connections, so it's worth to fetch them separately and store
             # them in a tempoarary file.
-            import urllib2, tempfile, shutil, uuid, os
-            response = urllib2.urlopen(url)
-            temp_dir = tempfile.mkdtemp()
-            temporary_file = '%s%s' % (temp_dir, uuid.uuid1().get_hex())
-            with open(temporary_file, 'wb') as f:
-                f.write(response.read())
-            self.Image = self.selection.InlineShapes.AddPicture(FileName=os.path.abspath(temporary_file))
-            shutil.rmtree(temp_dir)
+            try:
+                response = urllib2.urlopen(url)
+            except urllib2.URLError:
+                warnings.warn('Unable to load image {url}, skipping'.format(url=url))
+            else:
+                with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
+                    temporary_file.write(response.read())
+                self.Image = self.selection.InlineShapes.AddPicture(FileName=temporary_file.name)
+                os.remove(temporary_file.name)
         else:
             self.Image = self.selection.InlineShapes.AddPicture(FileName=url)
         with self.With(self.Image.Borders) as Borders:
