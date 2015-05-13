@@ -44,8 +44,9 @@ class List(BlockElement):
         parent = self.GetParent()
 
         # Before outdenting or closing the list we need to be in a newline,
-        # else we will remove the last element as well
-        self.selection.TypeParagraph()
+        # else we will remove the last element as well. We use self.EndRender so it doesn't
+        # insert multiple line breaks if the nested list is the last element of the parent.
+        self.addLineBreak()
 
         if parent is not None and parent.GetName() in self.AllowedChildren:
             # If we are nested then we just outdent the list
