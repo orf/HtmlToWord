@@ -45,6 +45,7 @@ class Image(ChildlessElement):
                 response = urllib2.urlopen(url)
             except urllib2.URLError:
                 warnings.warn('Unable to load image {url}, skipping'.format(url=url))
+                return
             else:
                 with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
                     temporary_file.write(response.read())
