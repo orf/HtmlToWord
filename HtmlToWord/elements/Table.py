@@ -56,13 +56,12 @@ class Table(BlockElement):
         self.Table = self.selection.Tables.Add(rng,
                                                NumRows=rows,
                                                NumColumns=cells,
-                                               AutoFitBehavior=constants.wdAutoFitFixed)
+                                               AutoFitBehavior=constants.wdAutoFitWindow)
 
         for count, child in enumerate(self.GetChildren()):
             row_number = count + 1
             child.SetRow(self.Table.Rows(row_number), row_number)
         self.Table.Style = "Table Grid"
-        self.Table.AllowAutoFit = True
 
     def ApplyFormatting(self, start_pos, end_pos):
         super(Table, self).ApplyFormatting(start_pos, end_pos)
@@ -72,7 +71,6 @@ class Table(BlockElement):
                 self.Table.Borders.Enable = 0
 
     def EndRender(self):
-        self.Table.Columns.AutoFit()
         self._MergeCells()
         self._end_range.Select()
 
