@@ -139,6 +139,7 @@ class BaseElement(object):
                             warnings.warn("Unable to process the style '%s' with value '%s'" % (style, val))
             except Exception as e:
                 warnings.warn("Error in applying formatting - %s" % e.message)
+        return rng
 
     def GetAllowedChildren(self):
         return []  # Represents any child
