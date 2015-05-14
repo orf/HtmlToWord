@@ -36,6 +36,12 @@ class BaseElement(object):
         """
         yield item
 
+    def getStartPosition(self):
+        return self.document.ActiveWindow.Selection.Start
+
+    def getEndPosition(self):
+        return self.document.ActiveWindow.Selection.End
+
     def IsChildAllowed(self, child):
         assert not (self.AllowedChildren and self.IgnoredChildren), "Only AllowedChildren OR IgnoredChildren allowed"
 
@@ -186,7 +192,7 @@ class BaseElement(object):
                 o = o.GetChildren()[0]
 
         self.addLineBreak()
-        self.start_pos = self.document.ActiveWindow.Selection.Start
+        self.start_pos = self.getStartPosition()
         self.FlushPreviousFormatting()
         self.StartRender()
         return True
@@ -197,13 +203,8 @@ class BaseElement(object):
 
     def _EndRender(self):
         if self.__shouldCallEndRender:
-            if hasattr(self, 'Cell'):
-                start_pos = self.Cell.Range.Start
-                end_pos = self.Cell.Range.End
-            else:
-                start_pos = self.start_pos
-                end_pos = self.document.ActiveWindow.Selection.End
-
+            start_pos = self.start_pos
+            end_pos = self.getEndPosition()
             self.ApplyFormatting(start_pos, end_pos)
             self.EndRender()
 
