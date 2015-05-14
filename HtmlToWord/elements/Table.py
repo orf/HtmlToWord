@@ -145,6 +145,12 @@ class TableHead(IgnoredElement):
 class TableRow(BaseElement):
     AllowedChildren = ["TableCell"]
 
+    def getStartPosition(self):
+        return self.Row.Range.Start
+
+    def getEndPosition(self):
+        return self.Row.Range.End
+
     def SetRow(self, Row, row_number):
         self.Row = Row
         self.row_number = row_number
@@ -161,6 +167,12 @@ class TableRow(BaseElement):
 class TableCell(BaseElement):
     StripTextAfter = True
     position = None
+
+    def getStartPosition(self):
+        return self.Cell.Range.Start
+
+    def getEndPosition(self):
+        return self.Cell.Range.End
 
     def SetCell(self, Cell):
         self.Cell = Cell
