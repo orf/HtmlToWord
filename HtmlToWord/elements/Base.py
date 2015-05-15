@@ -111,6 +111,10 @@ class BaseElement(object):
 
     def ApplyFormatting(self, start_pos, end_pos):
         if start_pos >= end_pos:
+            warnings.warn(
+                "Invalid start position ({0}) and end position ({1}) "
+                "for this range. Skipping".format(start_pos, end_pos)
+            )
             return None
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
