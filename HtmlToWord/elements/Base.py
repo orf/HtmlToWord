@@ -111,6 +111,10 @@ class BaseElement(object):
 
     def ApplyFormatting(self, start_pos, end_pos):
         if start_pos >= end_pos:
+            warnings.warn(
+                "Invalid start position ({0}) and end position ({1}) "
+                "for this range. Skipping".format(start_pos, end_pos)
+            )
             return None
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
@@ -135,10 +139,15 @@ class BaseElement(object):
                             color = getWdColorIndexFromMapping(val)
                             if color:
                                 rng.HighlightColorIndex = color
+                        elif style == "text-decoration":
+                            if val == "underline":
+                                rng.Font.UnderlineColor = constants.wdColorAutomatic
+                                rng.Font.Underline = constants.wdUnderlineSingle
                         else:
                             warnings.warn("Unable to process the style '%s' with value '%s'" % (style, val))
             except Exception as e:
                 warnings.warn("Error in applying formatting - %s" % e.message)
+        return rng
 
     def GetAllowedChildren(self):
         return []  # Represents any child

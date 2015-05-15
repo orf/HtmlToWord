@@ -5,31 +5,24 @@ import re
 
 
 class Bold(InlineElement):
-    def StartRender(self):
-        self.selection.BoldRun()
-
-    def EndRender(self):
-        self.selection.BoldRun()
-
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = super(Bold, self).ApplyFormatting(start_pos, end_pos)
+        if rng:
+            rng.Font.Bold = True
 
 class Italic(InlineElement):
-    def StartRender(self):
-        self.selection.ItalicRun()
-
-    def EndRender(self):
-        self.selection.ItalicRun()
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = super(Italic, self).ApplyFormatting(start_pos, end_pos)
+        if rng:
+            rng.Font.Italic = True
 
 
 class UnderLine(InlineElement):
-    def StartRender(self):
-        with self.With(self.selection.Font) as Font:
-            Font.UnderlineColor = constants.wdColorAutomatic
-            Font.Underline = constants.wdUnderlineSingle
-
-    def EndRender(self):
-        with self.With(self.selection.Font) as Font:
-            Font.UnderlineColor = constants.wdColorAutomatic
-            Font.Underline = constants.wdUnderlineNone
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = super(UnderLine, self).ApplyFormatting(start_pos, end_pos)
+        if rng:
+            rng.Font.UnderlineColor = constants.wdColorAutomatic
+            rng.Font.Underline = constants.wdUnderlineSingle
 
 
 class Text(ChildlessElement):
