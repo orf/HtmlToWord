@@ -60,7 +60,6 @@ class Image(ChildlessElement):
             self.Image.Height = height
         if width:
             self.Image.Width = width
-        self.selection.TypeParagraph()
         if caption:
             style = self.selection.Range.Style
             self.selection.Range.Style = self.GetDocument().Styles("caption")
