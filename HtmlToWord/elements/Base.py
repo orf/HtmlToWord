@@ -2,6 +2,7 @@ import contextlib
 from collections import defaultdict
 import warnings
 
+from win32com.client import constants
 
 from HtmlToWord.elements.styles import getWdColorFromStyle, getPointsFromPx, getWdColorIndexFromMapping
 
@@ -193,13 +194,18 @@ class BaseElement(object):
 
         self.addLineBreak()
         self.start_pos = self.getStartPosition()
-        self.FlushPreviousFormatting()
+        if self.selection.Range.HighlightColorIndex != constants.wdNoHighlight:
+            self.FlushPreviousTextBackgroundColor()
         self.StartRender()
         return True
 
-    def FlushPreviousFormatting(self):
-        rng = self.document.Range(self.start_pos, self.start_pos+1)
-        rng.HighlightColorIndex = 0
+    def FlushPreviousTextBackgroundColor(self):
+        start = self.selection.Start
+        self.selection.TypeText(" ")
+        end = self.selection.End
+        rng = self.document.Range(start, end)
+        rng.Select()
+        rng.HighlightColorIndex = constants.wdNoHighlight
 
     def _EndRender(self):
         if self.__shouldCallEndRender:
