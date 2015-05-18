@@ -2,7 +2,7 @@ from HtmlToWord.elements.Base import *
 from win32com.client import constants
 
 
-class List(BaseElement):
+class List(BlockElement):
     """
     I am a list, I can be ordered or unordered and I can have sub lists within me.
     There are two common ways to express sub lists using HTML and this class handles both of them:
@@ -31,11 +31,7 @@ class List(BaseElement):
         parent = self.GetParent()
         # Here we check to see if we have a parent and if they are a listelement or a orderedlist.
         if parent is not None and parent.GetName() in self.AllowedChildren:
-            if parent.GetName() == "ListElement":
-                # Our parent is a ListElement, this means we are a nested sub-list within a <li> tag.
-                # We make a new paragraph here because there will be text above us (not a <p> element)
-                # so we need to make a new list entry below, which will then be indented.
-                self.selection.TypeParagraph()
+            # Our parent is a ListElement, this means we are a nested sub-list within a <li> tag.
             self.selection.Range.ListFormat.ListIndent()
         else:
             self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
@@ -43,10 +39,15 @@ class List(BaseElement):
                 ContinuePreviousList=False,
                 DefaultListBehavior=constants.wdWord10ListBehavior
             )
-        pass
 
     def EndRender(self):
         parent = self.GetParent()
+
+        # Before outdenting or closing the list we need to be in a newline,
+        # else we will remove the last element as well. We use self.EndRender so it doesn't
+        # insert multiple line breaks if the nested list is the last element of the parent.
+        self.addLineBreak()
+
         if parent is not None and parent.GetName() in self.AllowedChildren:
             # If we are nested then we just outdent the list
             self.selection.Range.ListFormat.ListOutdent()
@@ -72,16 +73,5 @@ class UnorderedList(List):
         return constants.wdBulletGallery
 
 
-class ListElement(BaseElement):
+class ListElement(BlockElement):
     IgnoredChildren = ["Break"]
-
-    def EndRender(self):
-        # A bit of a hack but whatever. If the last child is a OrderedList or UnorderedList
-        # then we have a nested sub-list. Don't start a new paragraph because the List will
-        # do this for us.
-        last_child = ""
-        if len(self.GetChildren()):
-            last_child = self.GetChildren()[-1].GetName()
-
-        if not last_child in ("OrderedList", "UnorderedList"):
-            self.selection.TypeParagraph()

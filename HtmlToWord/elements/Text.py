@@ -4,32 +4,25 @@ from win32com.client import constants
 import re
 
 
-class Bold(BaseElement):
-    def StartRender(self):
-        self.selection.BoldRun()
+class Bold(InlineElement):
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = super(Bold, self).ApplyFormatting(start_pos, end_pos)
+        if rng:
+            rng.Font.Bold = True
 
-    def EndRender(self):
-        self.selection.BoldRun()
-
-
-class Italic(BaseElement):
-    def StartRender(self):
-        self.selection.ItalicRun()
-
-    def EndRender(self):
-        self.selection.ItalicRun()
+class Italic(InlineElement):
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = super(Italic, self).ApplyFormatting(start_pos, end_pos)
+        if rng:
+            rng.Font.Italic = True
 
 
-class UnderLine(BaseElement):
-    def StartRender(self):
-        with self.With(self.selection.Font) as Font:
-            Font.UnderlineColor = constants.wdColorAutomatic
-            Font.Underline = constants.wdUnderlineSingle
-
-    def EndRender(self):
-        with self.With(self.selection.Font) as Font:
-            Font.UnderlineColor = constants.wdColorAutomatic
-            Font.Underline = constants.wdUnderlineNone
+class UnderLine(InlineElement):
+    def ApplyFormatting(self, start_pos, end_pos):
+        rng = super(UnderLine, self).ApplyFormatting(start_pos, end_pos)
+        if rng:
+            rng.Font.UnderlineColor = constants.wdColorAutomatic
+            rng.Font.Underline = constants.wdUnderlineSingle
 
 
 class Text(ChildlessElement):
@@ -79,7 +72,7 @@ class Text(ChildlessElement):
         return "<Text: %s>" % repr(self.Text)
 
 
-class Paragraph(BaseElement):
+class Paragraph(BlockElement):
     StripTextAfter = True
 
     def StartRender(self):
@@ -90,13 +83,9 @@ class Paragraph(BaseElement):
     def EndRender(self):
         if self.HasChild("Break"):
             self.selection.Style = self.PreviousStyle
-        # Adding a paragprah after this looks weird as the list does this itself.
-        from HtmlToWord.elements.Misc import Image
-        if not isinstance(self.GetLastChild(), (List, Image)) and self.GetParent().GetLastChild() != self:
-            self.selection.TypeParagraph()
 
 
-class Pre(BaseElement):
+class Pre(BlockElement):
     StripFirstElementText = True
     PRE_FORMATTED = True
 

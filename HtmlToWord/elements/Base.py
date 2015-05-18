@@ -2,39 +2,16 @@ import contextlib
 from collections import defaultdict
 import warnings
 
+from win32com.client import constants
 
-def getWdColorFromRGB(rgbAttr):
-    """
-    receive an rgb color attribute string like 'rgb(149, 55, 52)' and tranform it to a numeric constant
-    in order to use it as a Selection.Font.Color attribute (as an item of WdColor enumeration)
-    """
-    try:
-        values = rgbAttr[rgbAttr.find('(')+1:rgbAttr.find(')')].split(',')
-    except:
-        warnings.warn("getWdColorFromRGB: not possible to parse the RGB string '%s' " % rgbAttr)
-        return None
-    else:
-        rgbstrlst = [v.strip() for v in values]
-        return (int(rgbstrlst[0]) + 0x100 * int(rgbstrlst[1]) + 0x10000 * int(rgbstrlst[2]))
-
-
-def getPointsFromPx(px_str):
-    """
-    receive an string representing the font-size attribute value in px (e.g. '16px') and tranform it
-    to the equivalent value in points
-    """
-    try:
-        px = px_str.split('px')[0]
-        return int(px)*0.75
-    except ValueError, IndexError:
-        warnings.warn("Unable to tranform the value '%s' points" % px_str)
-        return None
-
+from HtmlToWord.elements.styles import getWdColorFromStyle, getPointsFromPx, getWdColorIndexFromMapping
 
 class BaseElement(object):
     AllowedChildren = []
     IgnoredChildren = []
     IsIgnored = False
+    soup = None
+    blockDisplay = None
 
     # StripTextAfter is used by elements that contain text, such as paragraphs. Text objects after will be stripped
     # of any whitespace
@@ -59,6 +36,12 @@ class BaseElement(object):
         temp.method2()
         """
         yield item
+
+    def getStartPosition(self):
+        return self.document.ActiveWindow.Selection.Start
+
+    def getEndPosition(self):
+        return self.document.ActiveWindow.Selection.End
 
     def IsChildAllowed(self, child):
         assert not (self.AllowedChildren and self.IgnoredChildren), "Only AllowedChildren OR IgnoredChildren allowed"
@@ -127,6 +110,12 @@ class BaseElement(object):
         return None, None
 
     def ApplyFormatting(self, start_pos, end_pos):
+        if start_pos >= end_pos:
+            warnings.warn(
+                "Invalid start position ({0}) and end position ({1}) "
+                "for this range. Skipping".format(start_pos, end_pos)
+            )
+            return None
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
             try:
@@ -143,13 +132,22 @@ class BaseElement(object):
                             if fontsize:
                                 rng.Font.Size = fontsize
                         elif style=="color":
-                            color = getWdColorFromRGB(val)
+                            color = getWdColorFromStyle(val)
                             if color:
                                 rng.Font.Color = color
+                        elif style=="background-color":
+                            color = getWdColorIndexFromMapping(val)
+                            if color:
+                                rng.HighlightColorIndex = color
+                        elif style == "text-decoration":
+                            if val == "underline":
+                                rng.Font.UnderlineColor = constants.wdColorAutomatic
+                                rng.Font.Underline = constants.wdUnderlineSingle
                         else:
                             warnings.warn("Unable to process the style '%s' with value '%s'" % (style, val))
             except Exception as e:
                 warnings.warn("Error in applying formatting - %s" % e.message)
+        return rng
 
     def GetAllowedChildren(self):
         return []  # Represents any child
@@ -203,22 +201,32 @@ class BaseElement(object):
 
                 o = o.GetChildren()[0]
 
-        self.start_pos = self.document.ActiveWindow.Selection.Start
+        self.addLineBreak()
+        self.start_pos = self.getStartPosition()
+        if self.selection.Range.HighlightColorIndex != constants.wdNoHighlight:
+            self.FlushPreviousTextBackgroundColor()
         self.StartRender()
         return True
 
-    def _EndRender(self):
-        if hasattr(self, 'Cell'):
-            start_pos = self.Cell.Range.Start
-            end_pos = self.Cell.Range.End
-        else:
-            start_pos = self.start_pos
-            end_pos = self.document.ActiveWindow.Selection.End
+    def FlushPreviousTextBackgroundColor(self):
+        start = self.selection.Start
+        self.selection.TypeText(" ")
+        end = self.selection.End
+        rng = self.document.Range(start, end)
+        rng.Select()
+        rng.HighlightColorIndex = constants.wdNoHighlight
 
+    def _EndRender(self):
         if self.__shouldCallEndRender:
-            end_pos = self.document.ActiveWindow.Selection.End
+            start_pos = self.start_pos
+            end_pos = self.getEndPosition()
             self.ApplyFormatting(start_pos, end_pos)
             self.EndRender()
+
+    def addLineBreak(self):
+        isParaStart = self.selection.Start == self.selection.Paragraphs(1).Range.Start
+        if self.blockDisplay and not isParaStart:
+            self.selection.TypeParagraph()
 
     def SetParent(self, parent):
         self.parent = parent
@@ -252,6 +260,11 @@ class BaseElement(object):
         self._EndRender()
         return False
 
+class BlockElement(BaseElement):
+    blockDisplay = True
+
+class InlineElement(BaseElement):
+    blockDisplay = False
 
 class IgnoredElement(BaseElement):
     IsIgnored = True
