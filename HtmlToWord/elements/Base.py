@@ -119,23 +119,24 @@ class BaseElement(object):
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
             try:
-                if attribute=='class' and value:
+                if attribute == 'class' and value:
                     try:
-                        rng.Style=value
+                        rng.Style = value
                     except:
                         warnings.warn("Unable to apply the class '%s'" % (value, ))
                 if attribute == 'style':
                     styles=[[s.strip() for s in x.split(':')] for x in value.split(';') if x != ""]
                     for style, val in styles:
-                        if style=='font-size':
+                        if style == 'font-size':
                             fontsize = getPointsFromPx(val)
                             if fontsize:
                                 rng.Font.Size = fontsize
-                        elif style=="color":
+                        elif style == "color":
                             color = getWdColorFromStyle(val)
                             if color:
                                 rng.Font.Color = color
-                        elif style=="background-color":
+                        elif style == "background-color":
+                            # Warning: reading HighlightColorIndex seems to have side effects on Range.Font properties
                             color = getWdColorIndexFromMapping(val)
                             if color:
                                 rng.HighlightColorIndex = color
