@@ -53,9 +53,6 @@ class Image(ChildlessElement):
                 os.remove(temporary_file.name)
         else:
             self.Image = self.selection.InlineShapes.AddPicture(FileName=url)
-        with self.With(self.Image.Borders) as Borders:
-            Borders.OutsideLineStyle = constants.wdLineStyleSingle
-            Borders.OutsideColor = constants.wdColorPaleBlue
         if height:
             self.Image.Height = height
         if width:
