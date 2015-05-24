@@ -1,5 +1,8 @@
 HtmlToWord
 ===
+
+#### This project has moved to [WordInserter](https://github.com/orf/wordinserter), supporting both Markdown and HTML.
+
 This module was created for use in an application that uses Word to generate reports based on HTML input from a web based WYSIWYG editor. You can use it like so:
 
 ```python
