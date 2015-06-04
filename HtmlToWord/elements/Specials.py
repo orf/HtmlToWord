@@ -10,8 +10,8 @@ from HtmlToWord.elements.Base import ChildlessElement
 class Footnote(ChildlessElement):
     """
     Footnotes support:
-    in order to correctly insert a footnote, it expect a custom html tag 'footnote' with an attribute
-    'data-content' that store the actual footnote text, e.g.:
+    in order to correctly insert a footnote, it expects a custom html tag 'footnote' with an attribute
+    'data-content' that stores the actual footnote text, e.g.:
     <footnote data-content="footnote text content"></footnote>
     """
 
@@ -26,7 +26,7 @@ class Footnote(ChildlessElement):
     def EndRender(self):
         # restore initial cursor position + 1
         if self.initial_position:
-            rng = self.document.Range(self.initial_position+1, self.initial_position+1)
+            rng = self.document.Range(self.initial_position + 1, self.initial_position + 1)
             rng.Select()
 
 
