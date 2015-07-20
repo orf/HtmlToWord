@@ -41,7 +41,8 @@ ElementMappings = {
     "pre": Pre,
 
     "blockquote": IgnoredElement,
-    "wbr": IgnoredElement
+    "wbr": IgnoredElement,
+    "footnote": Footnote
 }
 
 IncludeBSParseResult = ('table',)

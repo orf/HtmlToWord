@@ -119,23 +119,24 @@ class BaseElement(object):
         rng = self.document.Range(start_pos, end_pos)
         for attribute, value in self.attrs.items():
             try:
-                if attribute=='class' and value:
+                if attribute == 'class' and value:
                     try:
-                        rng.Style=value
+                        rng.Style = value
                     except:
                         warnings.warn("Unable to apply the class '%s'" % (value, ))
                 if attribute == 'style':
                     styles=[[s.strip() for s in x.split(':')] for x in value.split(';') if x != ""]
                     for style, val in styles:
-                        if style=='font-size':
+                        if style == 'font-size':
                             fontsize = getPointsFromPx(val)
                             if fontsize:
                                 rng.Font.Size = fontsize
-                        elif style=="color":
+                        elif style == "color":
                             color = getWdColorFromStyle(val)
                             if color:
                                 rng.Font.Color = color
-                        elif style=="background-color":
+                        elif style == "background-color":
+                            # Warning: reading HighlightColorIndex seems to have side effects on Range.Font properties
                             color = getWdColorIndexFromMapping(val)
                             if color:
                                 rng.HighlightColorIndex = color
@@ -203,24 +204,23 @@ class BaseElement(object):
 
         self.addLineBreak()
         self.start_pos = self.getStartPosition()
-        if self.selection.Range.HighlightColorIndex != constants.wdNoHighlight:
-            self.FlushPreviousTextBackgroundColor()
         self.StartRender()
         return True
-
-    def FlushPreviousTextBackgroundColor(self):
-        start = self.selection.Start
-        self.selection.TypeText(" ")
-        end = self.selection.End
-        rng = self.document.Range(start, end)
-        rng.Select()
-        rng.HighlightColorIndex = constants.wdNoHighlight
 
     def _EndRender(self):
         if self.__shouldCallEndRender:
             start_pos = self.start_pos
             end_pos = self.getEndPosition()
+
+            # Styles seem to overrun their container element when they span the entire line (at the point of insertion)
+            # To work around this, we insert a character to act as a buffer between the styled text and the end of the
+            # line, which we delete afterwards. It's not clean, but trust us, it's the least ugly way we could find to
+            # make this work.
+
+            self.selection.TypeText("X")
             self.ApplyFormatting(start_pos, end_pos)
+            self.selection.TypeBackspace()
+
             self.EndRender()
 
     def addLineBreak(self):
