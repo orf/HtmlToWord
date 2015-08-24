@@ -79,7 +79,7 @@ class Parser(object):
         I take HTML or a BeautifulSoup instance and return a list of parsed elements for use with Render.
         """
 
-        if isinstance(html, basestring):
+        if isinstance(html, str):
             old_html = html
             html = BeautifulSoup.BeautifulSoup(old_html, convertEntities="xhtml")
             if html.findChild("html") is None:
