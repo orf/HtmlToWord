@@ -86,6 +86,8 @@ class Parser(object):
             
             if use_bs3:
                 kwarg = {"convertEntities": "xhtml"}
+            else:
+                kwarg = {}
                 
             html = BeautifulSoup.BeautifulSoup(old_html, **kwarg)
             if html.findChild("html") is None:
