@@ -1,4 +1,4 @@
-from elements import *
+from .elements import *
 from collections import defaultdict
 try:
     import BeautifulSoup
