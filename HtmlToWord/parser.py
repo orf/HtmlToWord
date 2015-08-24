@@ -1,6 +1,9 @@
 from elements import *
 from collections import defaultdict
-import BeautifulSoup
+try:
+    import BeautifulSoup
+except ImportErrror:
+    import bs4 as BeautifulSoup
 import warnings
 import functools
 import itertools
