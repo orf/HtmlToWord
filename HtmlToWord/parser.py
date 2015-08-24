@@ -1,8 +1,10 @@
 from .elements import *
 from collections import defaultdict
+use_bs3 = True
 try:
     import BeautifulSoup
 except ImportError:
+    use_bs3 = False
     import bs4 as BeautifulSoup
 import warnings
 import functools
@@ -81,11 +83,14 @@ class Parser(object):
 
         if isinstance(html, str):
             old_html = html
-            html = BeautifulSoup.BeautifulSoup(old_html, convertEntities="xhtml")
+            
+            if use_bs3:
+                kwarg = {"convertEntities": "xhtml"}
+                
+            html = BeautifulSoup.BeautifulSoup(old_html, **kwarg)
             if html.findChild("html") is None:
                 # No HTML root tag.
-                html = BeautifulSoup.BeautifulSoup("<html>%s</html>" % old_html,
-                                                   convertEntities="xhtml")
+                html = BeautifulSoup.BeautifulSoup("<html>%s</html>" % old_html, **kwarg)
 
         return (item for item in (self._Parse(None, child)
                                   for child in html.childGenerator())
