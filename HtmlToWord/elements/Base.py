@@ -77,7 +77,7 @@ class BaseElement(object):
         self.children.append(child)
 
     def HasChild(self, child):
-        if not isinstance(child, basestring):
+        if not isinstance(child, str):
             child = child.GetName()
 
         for c in self.GetChildren():
