@@ -1,6 +1,6 @@
 import os
 import tempfile
-import urllib2
+import requests
 import warnings
 
 from HtmlToWord.elements.Base import *
@@ -42,13 +42,13 @@ class Image(ChildlessElement):
             # fetch remote files over HTTPS connections, so it's worth to fetch them separately and store
             # them in a tempoarary file.
             try:
-                response = urllib2.urlopen(url)
-            except urllib2.URLError:
+                response = requests.get(url)
+            except Exception:
                 warnings.warn('Unable to load image {url}, skipping'.format(url=url))
                 return
             else:
                 with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
-                    temporary_file.write(response.read())
+                    temporary_file.write(response.content)
                 self.Image = self.selection.InlineShapes.AddPicture(FileName=temporary_file.name)
                 os.remove(temporary_file.name)
         else:
