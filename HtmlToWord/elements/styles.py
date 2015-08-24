@@ -56,7 +56,7 @@ def getPointsFromPx(px_str):
     try:
         px = px_str.split('px')[0]
         return int(px)*0.75
-    except ValueError, IndexError:
+    except (ValueError, IndexError):
         warnings.warn("Unable to tranform the value '%s' points" % px_str)
         return None
 
