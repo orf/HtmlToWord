@@ -2,7 +2,7 @@ from .elements import *
 from collections import defaultdict
 try:
     import BeautifulSoup
-except ImportErrror:
+except ImportError:
     import bs4 as BeautifulSoup
 import warnings
 import functools
