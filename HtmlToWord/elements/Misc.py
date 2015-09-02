@@ -21,6 +21,9 @@ class Break(ChildlessElement):
 
     def EndRender(self):
         self.selection.TypeParagraph()
+        
+    def ApplyFormatting(self, start_pos, end_pos):
+        return
 
 
 class Div(BlockElement):
