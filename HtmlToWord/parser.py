@@ -54,9 +54,10 @@ IncludeBSParseResult = ('table',)
 
 
 class Parser(object):
-    def __init__(self, ElementMap=None, Word=None):
+    def __init__(self, ElementMap=None, Word=None, bs4_parser="lxml"):
         self.ElementMappings = ElementMap or ElementMappings.copy()
         self.Word = Word
+        self.bs4_parser = bs4_parser
 
         # Rendering hooks:
         # preRenderHook is ran before the element is rendered to the page.
@@ -87,7 +88,7 @@ class Parser(object):
             if use_bs3:
                 kwarg = {"convertEntities": "xhtml"}
             else:
-                kwarg = {}
+                kwarg = {"builder": self.bs4_parser}
                 
             html = BeautifulSoup.BeautifulSoup(old_html, **kwarg)
             if html.findChild("html") is None:
