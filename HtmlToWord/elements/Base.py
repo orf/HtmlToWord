@@ -120,6 +120,9 @@ class BaseElement(object):
         for attribute, value in self.attrs.items():
             try:
                 if attribute == 'class' and value:
+                    if isinstance(value, list):
+                        value = " ".join(value)
+                        
                     try:
                         rng.Style = value
                     except:
