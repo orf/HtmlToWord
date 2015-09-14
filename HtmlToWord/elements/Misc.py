@@ -45,7 +45,7 @@ class Image(ChildlessElement):
             # fetch remote files over HTTPS connections, so it's worth to fetch them separately and store
             # them in a tempoarary file.
             try:
-                response = requests.get(url)
+                response = requests.get(url, verify=False)
             except Exception:
                 warnings.warn('Unable to load image {url}, skipping'.format(url=url))
                 return
