@@ -27,7 +27,7 @@ def getWdColorFromHex(hexAttr):
     in order to use it as a Selection.Font.Color attribute (as an item of WdColor enumeration)
     """
 
-    rgbstrlst = map(ord, hexAttr.strip('#').decode('hex'))
+    rgbstrlst = bytes.fromhex(hexAttr.strip('#'))
     return (int(rgbstrlst[0]) + 0x100 * int(rgbstrlst[1]) + 0x10000 * int(rgbstrlst[2]))
 
 
