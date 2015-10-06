@@ -53,6 +53,8 @@ def getPointsFromPx(px_str):
     receive an string representing the font-size attribute value in px (e.g. '16px') and tranform it
     to the equivalent value in points
     """
+    if "pt" in px_str:
+        return px_str.split("pt")[0]
     try:
         px = px_str.split('px')[0]
         return int(px)*0.75
