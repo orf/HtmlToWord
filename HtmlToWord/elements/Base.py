@@ -6,6 +6,7 @@ from win32com.client import constants
 
 from HtmlToWord.elements.styles import getWdColorFromStyle, getPointsFromPx, getWdColorIndexFromMapping
 
+
 class BaseElement(object):
     AllowedChildren = []
     IgnoredChildren = []
@@ -103,7 +104,7 @@ class BaseElement(object):
         """
         Returns (idx, child) or None
         """
-        for idx,child in enumerate(self.GetChildren()):
+        for idx, child in enumerate(self.GetChildren()):
             if child.GetName() == name:
                 return idx, child
 
@@ -122,13 +123,26 @@ class BaseElement(object):
                 if attribute == 'class' and value:
                     if isinstance(value, list):
                         value = " ".join(value)
-                        
                     try:
                         rng.Style = value
                     except:
-                        warnings.warn("Unable to apply the class '%s'" % (value, ))
+                        warnings.warn("Unable to apply the class '%s'" % (value,))
+
                 if attribute == 'style':
-                    styles=[[s.strip() for s in x.split(':')] for x in value.split(';') if x != ""]
+                    styles = [[a.strip() for a in x.split(':', 1)]
+                              for x in value.split(';') if x != ""]
+
+                    margins = defaultdict(str, [style for style in styles if style[0].startswith("margin-")])
+
+                    if margins["margin-left"] == "auto" and margins["margin-right"] == "auto":
+                        # Hack hack hack. We don't want to center a table, because then all the contents gets
+                        # centered as well. Proberbly the same for all 'containery' things.
+                        from HtmlToWord.elements import Table
+                        if isinstance(self, Table):
+                            continue
+
+                        rng.ParagraphFormat.Alignment = constants.wdAlignParagraphCenter
+
                     for style, val in styles:
                         if style == 'font-size':
                             fontsize = getPointsFromPx(val)
@@ -263,11 +277,14 @@ class BaseElement(object):
         self._EndRender()
         return False
 
+
 class BlockElement(BaseElement):
     blockDisplay = True
 
+
 class InlineElement(BaseElement):
     blockDisplay = False
+
 
 class IgnoredElement(BaseElement):
     IsIgnored = True

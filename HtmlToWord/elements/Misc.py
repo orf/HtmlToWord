@@ -45,7 +45,7 @@ class Image(ChildlessElement):
             # fetch remote files over HTTPS connections, so it's worth to fetch them separately and store
             # them in a tempoarary file.
             try:
-                response = requests.get(url, verify=False)
+                response = requests.get(url, verify=False, timeout=5)
             except Exception:
                 warnings.warn('Unable to load image {url}, skipping'.format(url=url))
                 return
@@ -57,9 +57,9 @@ class Image(ChildlessElement):
         else:
             self.Image = self.selection.InlineShapes.AddPicture(FileName=url)
         if height:
-            self.Image.Height = height
+            self.Image.Height = int(height) * 0.75
         if width:
-            self.Image.Width = width
+            self.Image.Width = int(width) * 0.75
         if caption:
             style = self.selection.Range.Style
             self.selection.Range.Style = self.GetDocument().Styles("caption")
