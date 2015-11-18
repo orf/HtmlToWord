@@ -10,7 +10,7 @@ setup(
     author_email='tom@tomforb.es',
     description='Render HTML to a specific portion of a word document',
     install_requires=["BeautifulSoup4",
-                      "pywin32",
+                      "pypiwin32",
                       "requests"],
     include_package_data=True,
     long_description="""\
